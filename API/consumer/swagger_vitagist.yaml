@@ -4,8 +4,8 @@ info:
   description: writing specs for API documentation
   version: 1.0.1
 servers:
-  - url: http://127.0.0.1:8000/api/v1/consumer
-  - url: http://192.168.1.23:3000/api/v1/consumer
+  #- url: http://127.0.0.1:8000/api/v1/consumer
+  #- url: http://192.168.1.23:3000/api/v1/consumer
   - url: https://consumer-service-l4xd.onrender.com/api/v1/consumer
 
 paths:
