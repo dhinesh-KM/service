@@ -112,7 +112,7 @@ async function sprelationship_Accept_Consumer(data)
             spr.isaccepted = false
             spr.status = 'rejected'
             spr.reject_reason = reject_reason || ''
-            msg = 'Relationship accepted successfully.'
+            msg = 'Relationship rejeccted successfully.'
         }
 
     await spr.save()
