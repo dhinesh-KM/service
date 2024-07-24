@@ -43,13 +43,10 @@ function cache_invalidation(req,tags,path)
 const get = (method) => {
     
     return asynchandler(async(req,res) => {
-        let params ={}
-        if (req.params != undefined)
-            params = { ...req.params}
-        params = {...params, cofferid: req.user.coffer_id };
-
-            const result = await method(params);
-            res.status(status.OK).json(result);
+        const params = {...req.params, cofferid: req.user.coffer_id };
+        console.log("***********")
+        const result = await method(params);
+        res.status(status.OK).json(result);
         })
     
 }
