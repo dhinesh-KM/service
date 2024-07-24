@@ -47,6 +47,9 @@ async function sprelationship_Request_Consumer(data)
     const {cofferid, consumerId, description} = data //logged in user cofferid
     const con = await consumer_ByCofferid(cofferid)
     const acp = await Consumer.findById(consumerId)
+    
+    if (!acp)
+        throw new CustomError('Consumer not found', status.NOT_FOUND)
 
     if (acp.coffer_id == cofferid)
         throw new CustomError('Operation not permitted', status.CONFLICT)

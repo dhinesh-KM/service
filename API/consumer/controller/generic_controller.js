@@ -1,8 +1,10 @@
 const status = require('http-status')
+const logger = require('../logger')
 
 const post = (method) => {
     return async (req, res, next) => {
         const data = req.body
+        console.log("::",req.user)
         if (req.user != undefined)
             data.cofferid = req.user.coffer_id
         if (Object.keys(req.params).length > 0)
