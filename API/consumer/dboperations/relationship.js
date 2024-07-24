@@ -94,7 +94,7 @@ async function sprelationship_Accept_Consumer(data)
     if (spr == null)
         throw new CustomError('Relationship not found', status.NOT_FOUND)
 
-    if (spr.acceptor_uid != data['cofferid'])
+    if (spr.acceptor_uid != cofferid)
         throw new CustomError('You are not permitted to accept the relationship', status.CONFLICT)
  
     if (spr.isaccepted) 
