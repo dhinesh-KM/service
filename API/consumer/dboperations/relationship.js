@@ -30,10 +30,14 @@ async function consumer_ByCofferid(cofferid)
  
 async function getConsumer(params)
 {
-    
     const {cofferid} = params;
-    let cons = await Consumer.find({coffer_id : { $ne : cofferid}})
+
+    //Retrieve all consumers except the logged-in user.
+    let cons = await Consumer.find({coffer_id : { $ne : cofferid}}) 
+
+    // Transform the 'cons' array to include only specific properties
     cons = cons.map( (data) => {  return { "firstName":data.first_name, "lastName":data.last_name, "email":data.email, "id":data._id} } )
+
     return {consumers: cons}
 }
 
@@ -51,14 +55,17 @@ async function sprelationship_Request_Consumer(data)
     if (!acp)
         throw new CustomError('Consumer not found', status.NOT_FOUND)
 
+    //Throw error if consumerId is user
     if (acp.coffer_id == cofferid)
         throw new CustomError('Operation not permitted', status.CONFLICT)
 
+    // Check  the relationship is already created from the requestor's side, If found throw error
     const spr = await SpecialRelationship.findOne({requestor_uid : cofferid, acceptor_uid : acp.coffer_id })
     if (spr)
         throw new CustomError('Relationship already exists', status.CONFLICT)
     else
         {
+            // Check if the relationship is already created from the acceptor's side, If found throw error
             const spr = await SpecialRelationship.findOne({requestor_uid : acp.coffer_id, acceptor_uid : cofferid })
             if (spr)
                 throw new CustomError('Relationship already exists', status.CONFLICT)
@@ -90,15 +97,18 @@ async function sprelationship_Request_Consumer(data)
 async function sprelationship_Accept_Consumer(data)
 {
     const {response, cofferid, params: {relid}, reject_reason } = data
+    
     const spr = await SpecialRelationship.findById(relid)
     let msg
 
     if (spr == null)
         throw new CustomError('Relationship not found', status.NOT_FOUND)
 
+    // Ensure the acceptor user ID matches the expected coffer ID; otherwise, throw an error indicating a conflict
     if (spr.acceptor_uid != cofferid)
         throw new CustomError('You are not permitted to accept the relationship', status.CONFLICT)
- 
+    
+    // Throw error if relationship already accepted
     if (spr.isaccepted) 
         throw new CustomError('Relationship already accepted.', status.CONFLICT)
     
@@ -118,6 +128,7 @@ async function sprelationship_Accept_Consumer(data)
         }
 
     await spr.save()
+
     return { msg: msg}
 }
 
@@ -136,6 +147,7 @@ async function getRelationships(data)
     //Transform the special relationship object data
     async function modify(item)
     {
+        //If the user is requestor then modify the data to display acceptor details
         if (item.requestor_uid == cofferid)
             {
                 const con = await consumer_ByCofferid(item.acceptor_uid)
@@ -146,9 +158,9 @@ async function getRelationships(data)
                 tags = ['Personal']
                     
             }
+        //If the user is acceptor then modify the data to display requestor details
         if (item.acceptor_uid == cofferid)
             {
-
                 const con = await consumer_ByCofferid(item.requestor_uid)
                 biztype = 'consumer'
                 business_name = con.consumer_fullname()
@@ -156,6 +168,7 @@ async function getRelationships(data)
                 profileUrl = con.profileUrl || ''
                 tags = ['Personal']
                     
+                // If user is acceptor and isaccepted is false then can_accept true , otherwise false
                 if (item.isaccepted == false)
                     can_accept = true
             }
@@ -179,7 +192,10 @@ async function getRelationships(data)
             'tags': tags,
             'profileUrl': profileUrl})
     }
+
     let spr = [],spr1,spr2
+
+    //If tag is defined then find relationship with tag
     if(tag != undefined)
         {
             spr1 = await SpecialRelationship.find({requestor_uid: cofferid, requestor_tags: tag})
@@ -191,6 +207,8 @@ async function getRelationships(data)
             spr2 = await SpecialRelationship.find({acceptor_uid: cofferid})
         }
     spr  = [...spr1,...spr2]
+
+    // Iterate over each item in array of relationship objects and apply 'modify' function asynchronously to transform data
     for( const item of spr)
         await modify(item)
 
@@ -207,7 +225,6 @@ async function sprelationship_TagCount(data)
 {
     const {cofferid} = data
 
-    
     // tags count array
     const tags_count = [];
 
