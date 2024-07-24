@@ -86,7 +86,6 @@ async function sprelationship_Request_Consumer(data)
  */
 async function sprelationship_Accept_Consumer(data)
 {
-    console.log(data)
     const {response, cofferid, params: {relid}, reject_reason } = data
     const spr = await SpecialRelationship.findById(relid)
     let msg
@@ -130,36 +129,30 @@ async function getRelationships(data)
     let business_name,biztype,guid,can_accept = false,profileUrl,result_data = [],tags
     
     const {cofferid, params: {tag} = {}} = data
-    console.log(data,cofferid,tag)
 
     //Transform the special relationship object data
     async function modify(item)
     {
-        
         if (item.requestor_uid == cofferid)
             {
-                if(item.requestor_type == 'consumer')
-                    {
-                        const con = await consumer_ByCofferid(item.requestor_uid)
-                        biztype = 'consumer'
-                        business_name = con.consumer_fullname()
-                        guid = con.guid()
-                        profileUrl = ''
-                        tags = item.requestor_tags
-                    }
+                const con = await consumer_ByCofferid(item.acceptor_uid)
+                biztype = 'consumer'
+                business_name = con.consumer_fullname()
+                guid = con.guid()
+                profileUrl = con.profileUrl || ''
+                tags = ['Personal']
+                    
             }
         if (item.acceptor_uid == cofferid)
             {
-                if(item.requestor_type == 'consumer')
-                    {
-                        const con = await consumer_ByCofferid(item.acceptor_uid)
-                        biztype = 'consumer'
-                        business_name = con.consumer_fullname()
-                        guid = con.guid()
-                        profileUrl = ''
-                        tags = item.acceptor_tags
 
-                    }
+                const con = await consumer_ByCofferid(item.requestor_uid)
+                biztype = 'consumer'
+                business_name = con.consumer_fullname()
+                guid = con.guid()
+                profileUrl = con.profileUrl || ''
+                tags = ['Personal']
+                    
                 if (item.isaccepted == false)
                     can_accept = true
             }
@@ -186,13 +179,13 @@ async function getRelationships(data)
     let spr = [],spr1,spr2
     if(tag != undefined)
         {
-            spr1 = await SpecialRelationship.find({requestor_uid: cofferid})
-            spr2 = await SpecialRelationship.find({acceptor_uid: cofferid})
+            spr1 = await SpecialRelationship.find({requestor_uid: cofferid, requestor_tags: tag})
+            spr2 = await SpecialRelationship.find({acceptor_uid: cofferid, accepted_tags: tag})
         }
     else
         {
-            spr1 = await SpecialRelationship.find({requestor_uid: cofferid, requestor_tags: tag})
-            spr2 = await SpecialRelationship.find({acceptor_uid: cofferid, accepted_date: tag})
+            spr1 = await SpecialRelationship.find({requestor_uid: cofferid})
+            spr2 = await SpecialRelationship.find({acceptor_uid: cofferid})
         }
     spr  = [...spr1,...spr2]
     for( const item of spr)
