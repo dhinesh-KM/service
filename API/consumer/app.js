@@ -16,7 +16,9 @@ app.use((req, res, next) => {
     next();
 });
 
-(async function connectdb () {
+let count = 0
+const connectdb = async  () => {
+
     try{
         logger.info("Connecting to MongoDB...");
         await mongoose.connect(process.env.DBURL, { autoIndex: false });
@@ -24,8 +26,18 @@ app.use((req, res, next) => {
     }
     catch(e){
         logger.error(`DBerror: ${e.message}`);
+        if (count < 5)
+        {
+            count += 1
+            setTimeout(connectdb(),5000)
+            
+            
+        }
+        
     }
-})();
+};
+
+connectdb()
 
 const word = { id: 1, movie : "VTV"}
 

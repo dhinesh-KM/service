@@ -5,7 +5,8 @@ info:
   version: 1.0.1
 servers:
   - url: http://127.0.0.1:8000/api/v1/consumer
-  - url: http://192.168.1.23:3000/api/v1/consumers
+  - url: http://192.168.1.23:3000/api/v1/consumer
+  - url: https://consumer-service-l4xd.onrender.com/api/v1/consumer
 
 paths:
   /login:
@@ -903,12 +904,12 @@ components:
           type: string
           format: email
           description: User's email address
-          example: "vijay123@gmail.com"
+          example: "boomibalagan001@gmail.com"
         password:
           type: string
           format: password
           description: User's password
-          example: "dev123"
+          example: "#Boomi1234"
 
     LoginResponse:
       type: object
