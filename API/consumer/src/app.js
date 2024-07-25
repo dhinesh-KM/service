@@ -1,19 +1,19 @@
 const mongoose = require('mongoose');
 const express = require("express");
 const app = express();
-const  ErrorHandler = require('../middleware/errorHandler')
-const logger = require('../logger')
+const  ErrorHandler = require('./middleware/errorHandler')
+const logger = require('./configs/logger')
 const cors = require('cors');
 const connectdb = require('./configs/database')
+const config = require('./configs/config')
 const userRouter = require('./route/consumer_route')
 const rsRouter = require('./route/RS_route')
-const  CustomError  = require('../middleware/customerror');
+const  CustomError  = require('./middleware/customerror');
 const status = require('http-status')
 
 
-require('dotenv').config();
  
-const port = process.env.PORT || 3000;
+const port = config.port || 3000;
 
 app.use((req, res, next) => {
     logger.info(`${req.method} ${req.originalUrl}`);

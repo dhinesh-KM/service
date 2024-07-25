@@ -1,9 +1,8 @@
 const {Consumer} = require('../models/consumer')
 const {SpecialRelationship} = require('../models/relationship')
 const CustomError = require('../middleware/customerror')
-const logger = require('../logger')
+const logger = require('../configs/logger')
 const status = require('http-status')
-const { response } = require('express')
 
 /**
  * 

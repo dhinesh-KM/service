@@ -1,5 +1,4 @@
 const status = require('http-status')
-const logger = require('../logger')
 
 const post = (method) => {
     return async (req, res, next) => {

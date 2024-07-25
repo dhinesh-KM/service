@@ -1,5 +1,5 @@
 const status = require('http-status')
-const logger = require('./')
+const logger = require('../configs/logger')
 
 // Error handler middleware for error
 const ErrorHandler = (err,req,res,next) => {

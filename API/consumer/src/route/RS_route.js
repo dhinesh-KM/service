@@ -1,11 +1,10 @@
 const express = require('express')
 const router = express.Router()
 const control = require('../controller/RS_controller')
-const {validate_payload} = require('../../validation/validator')
-const {relshipRequestSchema, relshipAcceptSchema} = require('../../validation/schema')
+const {validate_payload} = require('../validation/validator')
+const {relshipRequestSchema, relshipAcceptSchema} = require('../validation/schema')
 const authjwt = require('../middleware/authmiddleware')
-const {IsUser, personalDocs} = require('../middleware/permission')
-const { valid } = require('joi')
+const { personalDocs} = require('../middleware/permission')
 
 
 router.use(authjwt)

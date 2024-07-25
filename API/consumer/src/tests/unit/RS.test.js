@@ -4,7 +4,6 @@ const { getConsumer, sprelationship_Request_Consumer, sprelationship_Accept_Cons
 const {Consumer} = require('../../models/consumer');
 const CustomError = require('../../middleware/customerror');
 const { SpecialRelationship, SharedDocument } = require('../../models/relationship');
-const { prototype } = require('supertest/lib/agent');
 
 jest.mock('../../models/Consumer');  // Mock the Consumer model
 jest.mock('../../models/relationship') // Mock the SpecialRelationship model

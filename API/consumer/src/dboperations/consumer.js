@@ -3,12 +3,12 @@ const crypto = require('crypto')
 const bcrypt = require('bcrypt')
 const utils = require('../utils')
 const CustomError = require('../middleware/customerror')
-const logger = require('../logger')
+const logger = require('../configs/logger')
 const moment = require('moment')
 const otplib = require('otplib')
 const status = require('http-status')
 const jwt = require('jsonwebtoken')
-require('dotenv').config()
+const config = require('../configs/config')
 let lastgeneratedtime
 
 // Handle not found error
@@ -252,7 +252,7 @@ async function get_consumer(data)
 // OTP generation
 function OTP()
 {
-    const otp = otplib.authenticator.generate(process.env.SECRETKEY)
+    const otp = otplib.authenticator.generate(config.secretKey)
     lastgeneratedtime = new Date()
     return otp
     
@@ -272,7 +272,7 @@ function checkOtp(data)
         
     else
         {
-            const otp = otplib.authenticator.check(data, process.env.SECRETKEY)
+            const otp = otplib.authenticator.check(data, config.secretKey)
             if (otp)
                 return true
 
@@ -402,7 +402,7 @@ const generateToken = (con) => {
     }
     
     // Generate JWT token with secret key and expiration time
-    const token = jwt.sign(payload, process.env.SECRETKEY, { expiresIn: '24h' })
+    const token = jwt.sign(payload, config.secretKey, { expiresIn: '24h' })
     return token
 }
 

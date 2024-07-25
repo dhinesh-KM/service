@@ -1,6 +1,7 @@
 const {Reminder} = require('../models/consumer');
 const CustomError = require('./customerror');
 const axios = require('axios')
+const config = require('../configs/config')
 
 async function IsUser (req,res,next){
     try{
