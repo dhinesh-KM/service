@@ -1,4 +1,4 @@
-const {get, post, patch, Delete} = require('./generic_controller');
+const {get, post, patch, Delete, retrive} = require('./generic_controller');
 const db = require('../dboperations');
 
 // Middleware functions to handle Personal document operations
@@ -23,7 +23,7 @@ const documentDetails = get((params) => db.personalDoc_Operations({...params, ac
 
 const post_Idocument = post((params,data) => db.identityDoc_Operations({...params, action : 'create'},data));
 
-const get_pdocs = get(db.getAllDocs)
+const get_pdocs = retrive(db.getAllDocs)
 
 
 module.exports = {getCitzDocuments, getTagsCount, getTagDocuments, postDocument, updateDocument, downloadDocument, 

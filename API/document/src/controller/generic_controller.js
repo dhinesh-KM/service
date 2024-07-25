@@ -93,7 +93,18 @@ const Delete = (method) => {
     })
 }
 
+const retrive = (method) => {
+    
+    return asynchandler(async(req,res) => {
+        const data = req.body
+        data.cofferid = req.user.coffer_id 
+        const result = await method(data);
+        res.status(status.OK).json(result);
+        })
+    
+}
 
 
 
-module.exports = {get, post, patch, Delete};
+
+module.exports = {get, post, patch, Delete, retrive};

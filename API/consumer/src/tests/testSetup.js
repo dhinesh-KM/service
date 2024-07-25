@@ -3,6 +3,8 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const {app,server} = require('../app')
 const {Consumer} = require('../models/consumer');
+const config = require('../configs/config');
+
 
 
 
@@ -42,8 +44,8 @@ const setUp = beforeAll( async() => {
     const jwt_Payload2 = { coffer_id: cofferid2, pk: user2._id }
 
     //token generation
-    jwt_token1 = jwt.sign(jwt_Payload1, process.env.SECRETKEY)
-    jwt_token2 = jwt.sign(jwt_Payload2, process.env.SECRETKEY)
+    jwt_token1 = jwt.sign(jwt_Payload1, config.secretKey)
+    jwt_token2 = jwt.sign(jwt_Payload2, config.secretKey)
 
 });
 

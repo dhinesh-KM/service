@@ -3,6 +3,7 @@ const {CustomError} = require('./middleware/customerror');
 const moment = require('moment');
 const logger = require('./configs/logger');
 const status = require('http-status');
+const { default: mongoose } = require('mongoose');
 
 
 
@@ -226,9 +227,36 @@ async function personalDoc_Operations(params,data)
 async function getAllDocs(data)
 {
     
-    const {cofferid} = data
-    const pdocs = await PersonalDocument.find({ consumer: cofferid})
-    return {data: pdocs}
+    const {docid, cofferid} = data
+    console.log(data)
+    let missing_Ids
+    const ids = docid.map(id => new mongoose.Types.ObjectId(id));
+    const pdocs = await PersonalDocument.aggregate([
+        {
+          $match: {
+            _id: { $in: ids }, consumer: cofferid
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            existingIds: {$push: "$_id"}
+          }
+        },
+        {
+          $project: {
+            _id: 0,
+            existingIds: 1,
+            missingIds: {
+              $setDifference: [ids, "$existingIds"]
+            }
+          }
+        }
+      ]).exec()
+    console.log(pdocs)
+    missing_Ids = pdocs.length == 0 ? ids :  pdocs[0].missingIds
+    
+    return {data: missing_Ids}
 }
 
 /*async function identityDoc_Operations(params,data)

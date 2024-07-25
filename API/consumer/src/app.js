@@ -1,14 +1,13 @@
-const mongoose = require('mongoose');
 const express = require("express");
 const app = express();
-const  ErrorHandler = require('./middleware/errorHandler')
-const logger = require('./configs/logger')
 const cors = require('cors');
 const connectdb = require('./configs/database')
 const config = require('./configs/config')
+const logger = require('./configs/logger')
+const ErrorHandler = require('./middleware/errorHandler')
 const userRouter = require('./route/consumer_route')
 const rsRouter = require('./route/RS_route')
-const  CustomError  = require('./middleware/customerror');
+const CustomError  = require('./middleware/customerror');
 const status = require('http-status')
 
 

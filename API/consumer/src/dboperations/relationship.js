@@ -1,5 +1,5 @@
 const {Consumer} = require('../models/consumer')
-const {SpecialRelationship} = require('../models/relationship')
+const {SpecialRelationship, SharedDocument} = require('../models/relationship')
 const CustomError = require('../middleware/customerror')
 const logger = require('../configs/logger')
 const status = require('http-status')
@@ -258,17 +258,21 @@ async function sprelationship_TagCount(data)
 
 async function shareDocs(data)
 {
-    const {cofferid, params: {relid}, add } = data
-    console.log(data,add)
-
-    const spr = await SpecialRelationship.findById(relid)
+    const {cofferid, params: {rel_id}, add, pdoc_ids} = data
+    console.log(new Set(data.add.docid))
+    const spr = await SpecialRelationship.findById(rel_id)
     if (spr == null)
         throw new CustomError('Relationship not found', status.NOT_FOUND)
 
-    const docid = add.reduce( (arr,data) => { 
-        arr.push(data.docid)
-        return arr
-    },[])
+    /*pdoc_ids.data.map( (id) => 
+    await SharedDocument.create({
+        relationship_id: rel_id,
+        relationship_type: 'consumer to consumer',
+        shared_with: spr.acceptor_uid,
+        shared_by: spr.requestor_uid,
+        docid: id,
+
+    }))*/
 
 
     //const doc = await 

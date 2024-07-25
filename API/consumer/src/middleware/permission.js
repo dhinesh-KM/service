@@ -22,18 +22,32 @@ async function IsUser (req,res,next){
 }
 
 // Fetches user personal docs data from document service using Axios.
-async function FetchData(next,token)
+async function FetchData(next,req)
 {
     try{
+        
+        const headers = { "Authorization" : `${req.header('Authorization')}` };
 
-        const headers = { "Authorization" : `${token}` };
+        //seperate the personal doc ids and identity doc ids to make payload for subsequest http request
+        const docid = req.body.add.reduce( (obj,data) => { 
+            if (data.doctype == 'identity')
+                obj['identity'].add(data.docid)
+            else
+                obj['personal'].add(data.docid)
+            return obj
+        },{"identity": new Set(), "personal": new Set()})
+        
+        const personal_payload = { docid: Array.from(docid.personal)}
+        const identity_payload = { docid: Array.from(docid.identity)}
 
-        // Make an asynchronous GET request to the personal document  endpoint
-        const response = await axios.get(`${config.domain}/api/v1/consumer/p-docs`, { headers });
+
+        // Make an asynchronous POST request to the personal document  endpoint to get missing ids
+        const response = await axios.post(`${config.domain}/api/v1/consumer/p-docs`, personal_payload,{ headers } );
+       
         return response
     }
     catch(err){
-        next(err);
+        next(`Axios error: ${err}`);
     }
 }
 
@@ -46,18 +60,8 @@ async function personalDocs(req,res,next)
     try{
 
         // Fetch data using the FetchData function, passing the next middleware function and the Authorization header
-        const response = await FetchData(next,req.header('Authorization'));
-        console.log(response)
-        let docs = response.data.data;
-
-        const docid = req.data.add.reduce( (arr,data) => { 
-            arr.push(data.docid)
-            return arr
-        },[])
-        
-        console.log(docs,docid)
-
-        req.params.citizen = citizen;
+        const response = await FetchData(next,req);
+        req.body.pdoc_ids = response.data;
         next();
     }
     catch(err)
