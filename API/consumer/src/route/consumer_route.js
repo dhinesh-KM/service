@@ -1,9 +1,9 @@
 const express = require('express');
 const router = express.Router();
-const control = require('../../controller/consumer_ctrl');
+const control = require('../controller/consumer_ctrl');
 const v = require('../../validation/validator');
 const s = require('../../validation/schema');
-const authjwt = require('../../middleware/authmiddleware');
+const authjwt = require('../middleware/authmiddleware');
 const {IsUser} = require('../middleware/permission')
 const logger = require('../logger')
 

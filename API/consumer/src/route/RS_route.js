@@ -3,7 +3,7 @@ const router = express.Router()
 const control = require('../controller/RS_controller')
 const {validate_payload} = require('../../validation/validator')
 const {relshipRequestSchema, relshipAcceptSchema} = require('../../validation/schema')
-const authjwt = require('../../middleware/authmiddleware')
+const authjwt = require('../middleware/authmiddleware')
 const {IsUser, personalDocs} = require('../middleware/permission')
 const { valid } = require('joi')
 

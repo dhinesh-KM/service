@@ -13,4 +13,8 @@ const getRelationships_TagCount = controller.get(db.sprelationship_TagCount)
 
 const getRelationships_ByTag = controller.get(db.getRelationships)
 
-module.exports = {getAllUser, create_SprRelShipReq, getAllRelationships, getRelationships_TagCount, getRelationships_ByTag, create_SprRelShipAcp}
+const relationshipDocs_Share = controller.post(db.shareDocs)
+
+module.exports = {getAllUser, create_SprRelShipReq, getAllRelationships, getRelationships_TagCount, getRelationships_ByTag, create_SprRelShipAcp,
+    relationshipDocs_Share,
+}

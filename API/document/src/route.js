@@ -27,7 +27,7 @@ router.get('/personal/:cat/:id/download', IsUser, redisCacheMiddleware({EX:3540}
 router.get('/personal/:cat/:id/view', IsUser, redisCacheMiddleware({EX:3540}), con_citizenships, control.viewDocument); 
 router.get('/personal/:cat/:id/details', IsUser, redisCacheMiddleware(), con_citizenships, control.documentDetails); 
 
-router.get('/personal/docs', control.get_pdocs)
+router.get('/p-docs', control.get_pdocs)
 
 
 
