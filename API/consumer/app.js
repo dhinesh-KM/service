@@ -6,7 +6,7 @@ const logger = require('./logger')
 const cors = require('cors');
 const userRouter = require('./route/consumer_route')
 const rsRouter = require('./route/RS_route')
-const { CustomError } = require('./middleware/customerror');
+const  CustomError  = require('./middleware/customerror');
 const status = require('http-status')
 
 

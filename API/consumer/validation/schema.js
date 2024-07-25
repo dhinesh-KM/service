@@ -60,7 +60,9 @@ const registerSchema = Joi.object(
         password : Joi.string().required(),
         confirm_password : Joi.string().valid(Joi.ref('password')).required().messages({'any.only': 'Passwords does not match.'})
     }
-).xor('email','mobile').messages({'object.missing':'Either Email OR Mobile is required.'}).options({ stripUnknown: true });
+).xor('email','mobile').messages({'object.missing':'Either Email OR Mobile is required.',
+                                  'object.xor' :  'Please enter either an email address or a mobile number, but not both at the same time.'})
+                                  .options({ stripUnknown: true });
 
 
 const dob_validator = (value, helpers) => {
