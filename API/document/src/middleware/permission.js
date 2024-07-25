@@ -62,6 +62,7 @@ async function con_citizenships(req,res,next)
             return obj = {...obj,[`${data.index}`] : `${data.country}`}; 
         },{});
 
+        console.group(req.params.cat)
         //Check for citizenship 
         if (!Object.keys(citizen).includes(req.params.cat))
             throw new CustomError("Citizenship not found", 404);

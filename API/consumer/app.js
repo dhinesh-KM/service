@@ -60,6 +60,10 @@ app.use(express.json());
 app.use('/api/v1/consumer',userRouter)
 app.use('/api/v1/consumer',rsRouter)
 
+app.use((req, res, next) => {
+    next(new CustomError('Resource not found', status.NOT_FOUND))
+})
+
 app.use(ErrorHandler)
 
  

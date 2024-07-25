@@ -225,9 +225,9 @@ async function personalDoc_Operations(params,data)
 
 async function getAllDocs(data)
 {
-    console.log(";;;")
+    
     const {cofferid} = data
-    const pdocs = await PersonalDocument.find({ coffer_id: cofferid})
+    const pdocs = await PersonalDocument.find({ consumer: cofferid})
     return {data: pdocs}
 }
 

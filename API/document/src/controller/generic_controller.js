@@ -44,7 +44,6 @@ const get = (method) => {
     
     return asynchandler(async(req,res) => {
         const params = {...req.params, cofferid: req.user.coffer_id };
-        console.log("***********")
         const result = await method(params);
         res.status(status.OK).json(result);
         })
