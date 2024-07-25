@@ -61,7 +61,7 @@ async function personalDocs(req,res,next)
 
         // Fetch data using the FetchData function, passing the next middleware function and the Authorization header
         const response = await FetchData(next,req);
-        req.body.pdoc_ids = response.data;
+        req.body.missingPdoc_Ids = response.data.data;
         next();
     }
     catch(err)
