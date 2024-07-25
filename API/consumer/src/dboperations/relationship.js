@@ -259,20 +259,24 @@ async function sprelationship_TagCount(data)
 async function shareDocs(data)
 {
     const {cofferid, params: {rel_id}, add, pdoc_ids} = data
-    console.log(new Set(data.add.docid))
+
     const spr = await SpecialRelationship.findById(rel_id)
     if (spr == null)
         throw new CustomError('Relationship not found', status.NOT_FOUND)
 
-    /*pdoc_ids.data.map( (id) => 
-    await SharedDocument.create({
-        relationship_id: rel_id,
-        relationship_type: 'consumer to consumer',
-        shared_with: spr.acceptor_uid,
-        shared_by: spr.requestor_uid,
-        docid: id,
 
-    }))*/
+    for (const data of add.data)
+    {
+        await SharedDocument.create({
+            relationship_id: rel_id,
+            relationship_type: 'consumer to consumer',
+            shared_with: spr.acceptor_uid,
+            shared_by: spr.requestor_uid,
+            docid: data.docid,
+            doctype: data.doctype
+        })
+    }
+    
 
 
     //const doc = await 
