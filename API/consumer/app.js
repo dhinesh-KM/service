@@ -6,6 +6,9 @@ const logger = require('./logger')
 const cors = require('cors');
 const userRouter = require('./route/consumer_route')
 const rsRouter = require('./route/RS_route')
+const { CustomError } = require('./middleware/customerror');
+const status = require('http-status')
+
 
 require('dotenv').config();
  
@@ -60,7 +63,7 @@ app.use(express.json());
 app.use('/api/v1/consumer',userRouter)
 app.use('/api/v1/consumer',rsRouter)
 
-app.use((req, res, next) => {
+app.use('*',(req, res, next) => {
     next(new CustomError('Resource not found', status.NOT_FOUND))
 })
 
