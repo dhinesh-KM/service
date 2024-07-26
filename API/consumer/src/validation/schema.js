@@ -157,6 +157,14 @@ const relshipAcceptSchema = Joi.object({
     })
 })
 
+const docShareSchema = Joi.object({
+    add: Joi.array().items( 
+        Joi.object({
+            doctype: Joi.string().valid('identity','personal').required().messages({'any.only': "doctype must be either 'identity' or 'personal'."}),
+            docid: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages({'string.pattern.base' : 'consumerId must be a 24-character hexadecimal string.'})
+        })).unique().required()
+})
+
 
 
 module.exports = {registerSchema, emailVerifySchema, emailResendSchema, mobileResendSchema, mobileVerifySchema, profileUpdateSchema,

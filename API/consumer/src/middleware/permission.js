@@ -31,20 +31,20 @@ async function FetchData(next,req)
         //seperate the personal doc ids and identity doc ids to make payload for subsequest http request
         const docid = req.body.add.reduce( (obj,data) => { 
             if (data.doctype == 'identity')
-                obj['identity'].add(data.docid)
+                obj['identity'].push(data.docid)
             else
-                obj['personal'].add(data.docid)
+                obj['personal'].push(data.docid)
             return obj
-        },{"identity": new Set(), "personal": new Set()})
+        },{"identity": [], "personal": []})
         
-        const personal_payload = { docid: Array.from(docid.personal)}
-        const identity_payload = { docid: Array.from(docid.identity)}
+        const personal_payload = { docid: docid.personal}
+        const identity_payload = { docid: docid.identity}
 
 
         // Make an asynchronous POST request to the personal document  endpoint to get missing ids
-        const response = await axios.post(`${config.domain}/api/v1/consumer/p-docs`, personal_payload,{ headers } );
-       
-        return response
+        const response1 = await axios.post(`${config.domain}/api/v1/consumer/p-docs`, personal_payload,{ headers } );
+        console.log("=========",response1.data)
+        return [response1.data]
     }
     catch(err){
         next(`Axios error: ${err}`);
@@ -61,7 +61,9 @@ async function personalDocs(req,res,next)
 
         // Fetch data using the FetchData function, passing the next middleware function and the Authorization header
         const response = await FetchData(next,req);
-        req.body.missingPdoc_Ids = response.data.data;
+        console.log(response)
+        const ids = {personal: response[0].data,}// identity: response[1].data.data}
+        req.body.docs = ids
         next();
     }
     catch(err)

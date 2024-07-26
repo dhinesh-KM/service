@@ -273,22 +273,32 @@ describe('Documents share ', () => {
 
     const docid1 = new mongoose.Types.ObjectId().toString()
     const docid2 = new mongoose.Types.ObjectId().toString()
+    const docid3 = new mongoose.Types.ObjectId().toString()
 
     const sprid1 = new mongoose.Types.ObjectId().toString()
-    const data = { add: [ { doctype: 'identity', docid: docid1},{ doctype: 'personal', docid: docid2} ], params: {relid: sprid1}, cofferid : cofferid1}
+    const data = { add: [ { doctype: 'identity', docid: docid1},{ doctype: 'personal', docid: docid2},{ doctype: 'personal', docid: docid3} ], 
+    params: {relid: sprid1}, cofferid : cofferid1}
 
     it('should throw an error if relationship id is not found', async () => {
         SpecialRelationship.findById.mockResolvedValue(null)
-        await expect(shareDocs(data)).rejects.toThrow(new CustomError('Relationship not found',404))
+        await expect(shareDocs(data)).rejects.toThrow(new CustomError('Relationship not found.',404))
     })
 
-    it('should throw an error if any of the docid is not found :', async () => {
-        SpecialRelationship.findById.mockResolvedValue({_id: sprid1})
-        await expect(shareDocs(data)).rejects.toThrow(new CustomError('Document with this id not found',404))
+    it('should throw an error if relationship has not accepted yet', async () => {
+        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: false})
+        await expect(shareDocs(data)).rejects.toThrow(new CustomError('Relationship not accepted.',202))
     })
 
-    it('should share documents with connection', async () => {
-        const payload = { add: [ { doctype: 'identity', docid: docid1},{ doctype: 'personal', docid: docid2} ]}
+    it('should throw an error if  docids in the payload is not found', async () => {
+        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true})
+        data.missingIds = {personal: [docid1], identity: [docid2,docid3]}
+        data.missingIds = {personal: [], identity: []}
+        await expect(shareDocs(data)).rejects.toThrow(new CustomError(`personal document with this id ${docid1} not found\nidentity documents with these ids ${[docid2,docid3]} not found\n`,404))
+    })
 
+    it('should throw an error if personal docids in the payload is not found', async () => {
+        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true})
+        data.missingIds = {personal: [], identity: []}
+        await expect(shareDocs(data)).rejects.toThrow(new CustomError(`personal documents with these ids ${[docid1,docid3]} not found`,404))
     })
 })

@@ -229,8 +229,8 @@ async function getAllDocs(data)
     
     const {docid, cofferid} = data
     console.log(data)
-    let missing_Ids
     const ids = docid.map(id => new mongoose.Types.ObjectId(id));
+    console.log(ids)
     const pdocs = await PersonalDocument.aggregate([
         {
           $match: {
@@ -240,23 +240,25 @@ async function getAllDocs(data)
         {
           $group: {
             _id: null,
-            existingIds: {$push: "$_id"}
+            existingIds: {$push: "$_id"},
+            existingNames: {$push: "$name"}
           }
         },
         {
           $project: {
             _id: 0,
             existingIds: 1,
+            existingNames: 1,
             missingIds: {
               $setDifference: [ids, "$existingIds"]
             }
           }
         }
       ]).exec()
-    console.log(pdocs)
-    missing_Ids = pdocs.length == 0 ? ids :  pdocs[0].missingIds
+    console.log("pdocs ",pdocs)
+    const [mis_Ids,names] = pdocs.length == 0 ? [ids,[]] :  [pdocs[0].missingIds,pdocs[0].existingNames]
     
-    return {data: missing_Ids}
+    return {data: {docname: names, missingIds: mis_Ids}}
 }
 
 /*async function identityDoc_Operations(params,data)
