@@ -261,6 +261,28 @@ async function getAllDocs(data)
     return {data: {docname: names, missingIds: mis_Ids}}
 }
 
+async function getAllDocsDetails(data)
+{
+    const {docid} = data
+    console.log(data)
+    const ids = docid.map(id => new mongoose.Types.ObjectId(id));
+    console.log(ids)
+    let docs = await PersonalDocument.find({_id : { $in: ids}})
+    console.log(docs)
+    docs = await Promise.all(docs.map( async  (data) =>  { return {  'docname': data.name,
+                                            'description': data.description,
+                                            'docid': data._id,
+                                            'category': data.category,
+                                            'doctype': 'personal',
+                                            'country_affiliation': data.category,
+                                            'filename':data.filename,
+                                            'url':await data.view(),
+                                            'content_type':data.content_type,
+                                            'added_encryption':false}}))
+    return { data: docs}
+
+}
+
 /*async function identityDoc_Operations(params,data)
 { 
     const {cat,cofferid, id,file,citizen, action,doc} = params;
@@ -302,4 +324,4 @@ async function getAllDocs(data)
 }*/
 
 
-module.exports = { personalDoc_Operations, getAllDocs};
+module.exports = { personalDoc_Operations, getAllDocs, getAllDocsDetails};

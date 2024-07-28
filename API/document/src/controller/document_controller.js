@@ -25,6 +25,9 @@ const post_Idocument = post((params,data) => db.identityDoc_Operations({...param
 
 const get_pdocs = retrive(db.getAllDocs)
 
+const get_pdocsDetails = retrive(db.getAllDocsDetails)
+
+
 
 module.exports = {getCitzDocuments, getTagsCount, getTagDocuments, postDocument, updateDocument, downloadDocument, 
-    deleteDocument, viewDocument, documentDetails, post_Idocument, get_pdocs}
+    deleteDocument, viewDocument, documentDetails, post_Idocument, get_pdocs, get_pdocsDetails}

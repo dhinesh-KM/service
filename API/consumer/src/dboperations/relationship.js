@@ -3,6 +3,7 @@ const {SpecialRelationship, SharedDocument} = require('../models/relationship')
 const CustomError = require('../middleware/customerror')
 const logger = require('../configs/logger')
 const status = require('http-status')
+const { remove } = require('winston')
 
 /**
  * 
@@ -12,6 +13,7 @@ const status = require('http-status')
  */
 async function consumer_ByCofferid(cofferid)
 {
+    console.log(cofferid)
     const con = await Consumer.findOne({ coffer_id: cofferid})
     if (con)
         return con
@@ -50,7 +52,7 @@ async function sprelationship_Request_Consumer(data)
     const {cofferid, consumerId, description} = data //logged in user cofferid
     const con = await consumer_ByCofferid(cofferid)
     const acp = await Consumer.findById(consumerId)
-    
+    console.log(con,acp)
     if (!acp)
         throw new CustomError('Consumer not found', status.NOT_FOUND)
 
@@ -123,7 +125,7 @@ async function sprelationship_Accept_Consumer(data)
             spr.isaccepted = false
             spr.status = 'rejected'
             spr.reject_reason = reject_reason || ''
-            msg = 'Relationship rejeccted successfully.'
+            msg = 'Relationship rejected successfully.'
         }
 
     await spr.save()
@@ -258,8 +260,8 @@ async function sprelationship_TagCount(data)
 
 async function shareDocs(data)
 {
-    const {cofferid, params: {rel_id}, add, docs} = data
-    let sharedWith, msg = '', name = "Documents"
+    const {cofferid, params: {rel_id}, add, remove, docs} = data
+    let sharedWith, msg = '', name = "Documents", result_msg
     console.log("********",data)
 
     const spr = await SpecialRelationship.findById(rel_id)
@@ -286,25 +288,67 @@ async function shareDocs(data)
         sharedWith = spr.requestor_uid
 
     const con = await consumer_ByCofferid(sharedWith)
+    if (add != undefined)
+        {
+            if (add.length == 1)
+                name = docs[add[0].doctype].docname
 
-    if (add.length == 1)
-        name = docs[Object.keys(docs)].docname
+            for (const data of add)
+                {
+                    const shrdoc = await SharedDocument.findOne({relationship_id: rel_id, docid: data.docid})
+                    console.log("-----find", shrdoc)
+                    if (shrdoc.length == 0)
+                        await SharedDocument.create({
+                            relationship_id: rel_id,
+                            relationship_type: 'consumer to consumer',
+                            shared_with: sharedWith,
+                            shared_by: cofferid,
+                            docid: data.docid,
+                            doctype: data.doctype
+                        })
+                } 
+            result_msg = `${name} shared with ${con.consumer_fullname()}.`
+        }
+    else
+        {
+            if (remove.length == 1)
+                name = docs[add[0].doctype].docname
 
-    for (const data of add)
+            for (const data of remove)
+                {
+                    const shrdoc = await SharedDocument.findOneAndDelete({relationship_id: rel_id, docid: data.docid})
+                    console.log("-----find", shrdoc)
+                    //if (shrdoc.length == 0)
+
+
+                }
+            result_msg = `${name} unshared with ${con.consumer_fullname()}.`
+        }
+
+    return { msg: `${name} shared with ${con.consumer_fullname()}.`}
+}
+
+async function share()
+{
+    const {cofferid, params: {rel_id} } = data
+
+    const spr = await SpecialRelationship.findById(rel_id)
+    if (spr == null)
+        throw new CustomError('Relationship not found.', status.NOT_FOUND)
+
+    let docs = await SharedDocument.find({relationship_id: rel_id})
+    
+    docs = docs.reduce( (obj,data) => { 
+            obj[data.doctype].push(data.docid)
+            return obj
+    },{personal: [], identity: []})
+
+    function modify(item)
     {
-        const shrdoc = await SharedDocument.find({relationship_id: rel_id, docid: data.docid})
-        console.log("-----find", shrdoc)
-        if (shrdoc.length == 0)
-            await SharedDocument.create({
-                relationship_id: rel_id,
-                relationship_type: 'consumer to consumer',
-                shared_with: sharedWith,
-                shared_by: cofferid,
-                docid: data.docid,
-                doctype: data.doctype
-            })
-    } 
-    return { msg: `${name} shared with ${con.consumer_fullname()}`}
+
+    }
+
+
 
 
 }

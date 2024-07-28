@@ -8,7 +8,7 @@ const { SpecialRelationship, SharedDocument } = require('../../models/relationsh
 jest.mock('../../models/Consumer');  // Mock the Consumer model
 jest.mock('../../models/relationship') // Mock the SpecialRelationship model
 
-describe('getConsumer', () => {
+describe('getConsumer 0', () => {
 
     it('should return consumers excluding the specified id', async () => {
         const mockConsumers = [
@@ -44,20 +44,23 @@ describe('relationship request consumer', () => {
 
     it("should throw an error if acceptor is not found 1", async() => {
         const mockData = {  consumerId: cofferid1, description: 'Request description', cofferid: cofferid2 };
-        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 }).mockResolvedValueOnce(null);
+        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 })
+        Consumer.findById.mockResolvedValueOnce(null);
         await expect(sprelationship_Request_Consumer(mockData)).rejects.toThrow(new CustomError('Consumer not found', 404))
     })
 
     it("should throw an error if acceptor is him 1", async() => {
         const mockData = {  consumerId: cofferid2, description: 'Request description', cofferid: cofferid1 };
-        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 }).mockResolvedValueOnce({ coffer_id: cofferid1  })
+        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 })
+        Consumer.findById.mockResolvedValueOnce({ coffer_id: cofferid1  })
         await expect(sprelationship_Request_Consumer(mockData)).rejects.toThrow(new CustomError('Operation not permitted', 409))
     })
 
     it("should throw an error if relationship already exists from requestor 1", async() => {
         SpecialRelationship.findOne.mockResolvedValue({id: sprid1, requestor_uid: cofferid1, acceptor_uid: cofferid2})
         const mockData = {  consumerId: cofferid2, description: 'Request description', cofferid: cofferid1  };
-        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 }).mockResolvedValueOnce({ coffer_id: cofferid2  })
+        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 })
+        Consumer.findById.mockResolvedValueOnce({ coffer_id: cofferid2  })
         await expect(sprelationship_Request_Consumer(mockData)).rejects.toThrow(new CustomError('Relationship already exists', 409))
     })
 
@@ -65,7 +68,8 @@ describe('relationship request consumer', () => {
         SpecialRelationship.findOne.mockResolvedValue({id: sprid1, requestor_uid: cofferid1, acceptor_uid: cofferid2})
                             .mockResolvedValue({id: sprid2, requestor_uid: cofferid2, acceptor_uid: cofferid1})
         const mockData = {  consumerId: cofferid2, description: 'Request description', cofferid: cofferid1 };
-        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 }).mockResolvedValueOnce({ coffer_id: cofferid2  })
+        Consumer.findOne.mockResolvedValueOnce({ coffer_id: cofferid1 })
+        Consumer.findById.mockResolvedValueOnce({ coffer_id: cofferid2  })
         await expect(sprelationship_Request_Consumer(mockData)).rejects.toThrow(new CustomError('Relationship already exists', 409))
     })
 
@@ -80,9 +84,8 @@ describe('relationship request consumer', () => {
         const mockConsumer2 = new Consumer({ _id: cofferid2 });
 
         // Mock the findOne method to return mock instances
-        Consumer.findOne
-            .mockResolvedValueOnce(mockConsumer1)  
-            .mockResolvedValueOnce(mockConsumer2);
+        Consumer.findOne.mockResolvedValueOnce(mockConsumer1)  
+        Consumer.findById.mockResolvedValueOnce(mockConsumer2);
 
         const result = await sprelationship_Request_Consumer(mockData)
 
@@ -94,6 +97,7 @@ describe('relationship request consumer', () => {
 describe('relationship accept consumer', () => {
     const cofferid1 = new mongoose.Types.ObjectId().toString()
     const cofferid2 = new mongoose.Types.ObjectId().toString()
+    const cofferid3 = new mongoose.Types.ObjectId().toString()
     const sprid1 = new mongoose.Types.ObjectId().toString()
     const sprid2 = new mongoose.Types.ObjectId().toString()
 
@@ -101,10 +105,10 @@ describe('relationship accept consumer', () => {
 
     //const relid = new mongoose.Types.ObjectId().toString()
 
-    const mockData1 = { response : "accept",  cofferid: cofferid1, params: {relid: sprid1}}
+    const mockData1 = { response : "accept",  cofferid: cofferid2, params: {relid: sprid1}}
     const mockData2 = { response : "reject",  cofferid: cofferid1, params: {relid: sprid2}}
 
-    const data = {_id: sprid1, requestor_uid : cofferid1, acceptor_uid: cofferid1, isaccepted: false}
+    const data = {_id: sprid1, requestor_uid : cofferid1, acceptor_uid: cofferid2, isaccepted: false}
 
 
     it('should throw an error if relationship is not found 2', async () => {
@@ -112,13 +116,12 @@ describe('relationship accept consumer', () => {
         await expect(sprelationship_Accept_Consumer(mockData1)).rejects.toThrow(new CustomError('Relationship not found',404))
     })
 
-    /*it('should throw an error if acceptor is him 2',async () => {
+    it('should throw an error if acceptor is not him 2',async () => {
         SpecialRelationship.findById.mockResolvedValue(data)
-        await expect(sprelationship_Accept_Consumer(mockData1)).rejects.toThrow(new CustomError('Operation not permitted',409))
-    })*/
+        await expect(sprelationship_Accept_Consumer(mockData2)).rejects.toThrow(new CustomError('You are not permitted to accept the relationship',409))
+    })
 
     it('should throw an error if relationship already accepted 2',async () => {
-        data.acceptor_uid = cofferid2
         data.isaccepted = true
         SpecialRelationship.findById.mockResolvedValue(data)
         await expect(sprelationship_Accept_Consumer(mockData1)).rejects.toThrow(new CustomError('Relationship already accepted.',409))
@@ -126,20 +129,20 @@ describe('relationship accept consumer', () => {
 
     it('should accept the relationship 2', async() => {
         data.isaccepted = false
-        data.acceptor_uid = cofferid2
         data.save =  jest.fn().mockResolvedValue(true)
         SpecialRelationship.findById.mockResolvedValue(data)
         const result = await sprelationship_Accept_Consumer(mockData1)
-        expect(result.msg).toEqual("Relationship status modified successfully.")
+        expect(result.msg).toEqual("Relationship accepted successfully.")
     })
 
     it('should reject the relationship 2', async() => {
         data.isaccepted = false
-        data.acceptor_uid = cofferid2
+        data.acceptor_uid = cofferid3
+        mockData2.cofferid = cofferid3
         data.save =  jest.fn().mockResolvedValue(true)
         SpecialRelationship.findById.mockResolvedValue(data)
         const result = await sprelationship_Accept_Consumer(mockData2)
-        expect(result.msg).toEqual("Relationship status modified successfully.")
+        expect(result.msg).toEqual("Relationship rejected successfully.")
     })
 
 })
@@ -268,15 +271,24 @@ describe('get relationships /', () => {
 
 })
 
-describe('Documents share ', () => {
+describe('Documents share3', () => {
     const cofferid1 = new mongoose.Types.ObjectId().toString()
+    const cofferid2 = new mongoose.Types.ObjectId().toString()
 
     const docid1 = new mongoose.Types.ObjectId().toString()
     const docid2 = new mongoose.Types.ObjectId().toString()
     const docid3 = new mongoose.Types.ObjectId().toString()
+    const docid4 = new mongoose.Types.ObjectId().toString()
 
     const sprid1 = new mongoose.Types.ObjectId().toString()
-    const data = { add: [ { doctype: 'identity', docid: docid1},{ doctype: 'personal', docid: docid2},{ doctype: 'personal', docid: docid3} ], 
+
+    const mockConsumer1 = new Consumer({ coffer_id: cofferid1, first_name: 'Boomibalagan', last_name: 'R', email: 'boomibalagan001@gmail.com' });
+    mockConsumer1.consumer_fullname = jest.fn().mockReturnValue('Boomibalagan R');
+
+    const mockConsumer2 = new Consumer({ coffer_id: cofferid2, first_name: 'bharathi', last_name: 'ganesh', email: "bharathiganesh@digicoffer.com" });
+    mockConsumer2.consumer_fullname = jest.fn().mockReturnValue('bharathi ganesh');
+
+    const data = { add: [ { doctype: 'identity', docid: docid1},{ doctype: 'personal', docid: docid2},{ doctype: 'personal', docid: docid3},{ doctype: 'personal', docid: docid4} ], 
     params: {relid: sprid1}, cofferid : cofferid1}
 
     it('should throw an error if relationship id is not found', async () => {
@@ -290,15 +302,60 @@ describe('Documents share ', () => {
     })
 
     it('should throw an error if  docids in the payload is not found', async () => {
-        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true})
-        data.missingIds = {personal: [docid1], identity: [docid2,docid3]}
-        data.missingIds = {personal: [], identity: []}
-        await expect(shareDocs(data)).rejects.toThrow(new CustomError(`personal document with this id ${docid1} not found\nidentity documents with these ids ${[docid2,docid3]} not found\n`,404))
+        Consumer.findOne.mockResolvedValue(mockConsumer2)
+        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true, requestor_uid: cofferid1, acceptor_uid: cofferid2})
+        data.docs = { personal: { docname: ["health doc"], missingIds: [docid2,docid4] } , identity: {docname: [], missingIds: [docid1]}}
+        await expect(shareDocs(data)).rejects.toThrow(new CustomError(`personal documents with these ids ${[docid2,docid4]} not found\nidentity document with this id ${[docid1]} not found\n`,404))
     })
 
-    it('should throw an error if personal docids in the payload is not found', async () => {
-        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true})
-        data.missingIds = {personal: [], identity: []}
-        await expect(shareDocs(data)).rejects.toThrow(new CustomError(`personal documents with these ids ${[docid1,docid3]} not found`,404))
+    it('should share docs with consumer', async () => {
+        Consumer.findOne.mockResolvedValue(mockConsumer2)
+        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true, requestor_uid: cofferid1, acceptor_uid: cofferid2})
+        SharedDocument.findOne.mockResolvedValueOnce([]).mockResolvedValueOnce([{}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{}])
+        data.docs = { personal: { docname: ["health doc"], missingIds: [] } , identity: {docname: [], missingIds: []}}
+        const result = await shareDocs(data)
+        expect(result.msg).toEqual('Documents shared with bharathi ganesh.')
+    })
+
+    it('should share doc with consumer', async () => {
+        Consumer.findOne.mockResolvedValue(mockConsumer2)
+        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true, requestor_uid: cofferid1, acceptor_uid: cofferid2})
+        SharedDocument.findOne.mockResolvedValueOnce([]).mockResolvedValueOnce([{}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{}])
+        data.docs = { personal: { docname: ["health doc"], missingIds: [] }, identity: {docname: [], missingIds: []} }
+        data.add = [ { doctype: 'personal', docid: docid1} ]
+        const result = await shareDocs(data)
+        expect(result.msg).toEqual('health doc shared with bharathi ganesh.')
+    })
+
+    it('should throw an error if docid is not found at action unshare:', async() => {
+        Consumer.findOne.mockResolvedValue(mockConsumer2)
+        SpecialRelationship.findById.mockResolvedValue({_id: sprid1, isaccepted: true, requestor_uid: cofferid1, acceptor_uid: cofferid2})
+        SharedDocument.findOne.mockResolvedValueOnce([]).mockResolvedValueOnce([{}]).mockResolvedValueOnce([]).mockResolvedValueOnce([{}])
+        delete data.add 
+        data.remove = [ { doctype: 'identity', docid: docid1},{ doctype: 'personal', docid: docid2},{ doctype: 'personal', docid: docid3},{ doctype: 'personal', docid: docid4} ]
+        const result = await shareDocs(data)
+        expect(result.msg).toEqual('Documents unshared with bharathi ganesh.')
     })
 })
+
+describe('shared by and with', () => {
+
+    it('should throw an error if relationship id is not found', async () => {
+        SpecialRelationship.findById.mockResolvedValue(null)
+        await expect(shareDocs(data)).rejects.toThrow(new CustomError('Relationship not found.',404))
+    })
+
+    it('should throw an error if shared docs with rel_id is not found', async () => {
+        SpecialRelationship.findById.mockResolvedValue(null)
+        SharedDocument.find.mockResolvedValue(null)
+        await expect(shareDocs(data)).rejects.toThrow(new CustomError('Documents not found.',404))
+    })
+
+    
+
+
+
+})
+
+
+
