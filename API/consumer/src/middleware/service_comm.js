@@ -9,8 +9,10 @@ async function mis_Ids(req, res, next) {
     try {
         const headers = { Authorization: `${req.header("Authorization")}` }
 
+        const body = req.body.add != undefined ? req.body.add : req.body.remove
+
         //seperate the personal doc ids and identity doc ids to make payload for subsequest http request
-        const docid = req.body.add.reduce(
+        const docid = body.reduce(
             (obj, data) => {
                 obj[data.doctype].push(data.docid)
                 return obj

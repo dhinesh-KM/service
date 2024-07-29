@@ -15,6 +15,8 @@ const getRelationships_ByTag = controller.get(db.getRelationships);
 
 const relationshipDocs_Share = controller.post(db.shareDocs);
 
+const relationshipDocs_Unshare = controller.post(db.shareDocs);
+
 const docs_SharedByMe = controller.get(db.share);
 
 
@@ -27,4 +29,5 @@ module.exports = {
     create_SprRelShipAcp,
     relationshipDocs_Share,
     docs_SharedByMe,
+    relationshipDocs_Unshare
 };

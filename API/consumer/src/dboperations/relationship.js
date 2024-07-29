@@ -3,8 +3,7 @@ const {SpecialRelationship, SharedDocument} = require('../models/relationship')
 const CustomError = require('../middleware/customerror')
 const logger = require('../configs/logger')
 const status = require('http-status')
-const { remove } = require('winston')
-
+const mongoose = require('mongoose')
 /**
  * 
  * @param {string} cofferid - cofferid of a consumer
@@ -104,29 +103,31 @@ async function sprelationship_Accept_Consumer(data)
 
     if (spr == null)
         throw new CustomError('Relationship not found', status.NOT_FOUND)
-
-    // Ensure the acceptor user ID matches the expected coffer ID; otherwise, throw an error indicating a conflict
-    if (spr.acceptor_uid != cofferid)
-        throw new CustomError('You are not permitted to accept the relationship', status.CONFLICT)
-    
+    console.log(spr.isaccepted)
     // Throw error if relationship already accepted
     if (spr.isaccepted) 
         throw new CustomError('Relationship already accepted.', status.CONFLICT)
     
     if (response == 'accept')
         {
+            // Ensure the acceptor user ID matches the expected coffer ID; otherwise, throw an error indicating a conflict
+            if (spr.acceptor_uid != cofferid)
+                throw new CustomError('You are not permitted to accept the relationship', status.CONFLICT)
             spr.isaccepted = true
             spr.accepted_date = Date.now()
             spr.status = 'accepted'
             msg  = 'Relationship accepted successfully.'
         }
-    if (response == 'reject')
+    /*if (response == 'reject')
         {
+            // Ensure the acceptor user ID matches the expected coffer ID; otherwise, throw an error indicating a conflict
+            if (spr.acceptor_uid != cofferid)
+                throw new CustomError('You are not permitted to reject the relationship', status.CONFLICT)
             spr.isaccepted = false
             spr.status = 'rejected'
             spr.reject_reason = reject_reason || ''
             msg = 'Relationship rejected successfully.'
-        }
+        }*/
 
     await spr.save()
 
@@ -280,7 +281,7 @@ async function shareDocs(data)
                               `${data} documents with these IDs ${id} not found`
     }
     if (err_Msg.length != 0)
-        throw new CustomError(msg, status.NOT_FOUND)
+        throw new CustomError(err_Msg, status.NOT_FOUND)
     
     sharedWith = spr.acceptor_uid
     if (sharedWith == cofferid)
@@ -295,7 +296,6 @@ async function shareDocs(data)
             for (const data of add)
                 {
                     const shrdoc = await SharedDocument.findOne({relationship_id: rel_id, docid: data.docid})
-                    console.log("-----find", shrdoc)
                     if (!shrdoc)
                         await SharedDocument.create({
                             relationship_id: rel_id,
@@ -311,16 +311,17 @@ async function shareDocs(data)
     else
         {
             if (remove.length == 1)
-                name = docs[add[0].doctype].docname
+                name = docs[remove[0].doctype].docname
 
-            for (const data of remove)
+            let docids = remove.reduce( (arr,data) => 
                 {
-                    const shrdoc = await SharedDocument.findOneAndDelete({relationship_id: rel_id, docid: data.docid})
-                    console.log("-----find", shrdoc)
-                    //if (shrdoc.length == 0)
+                    arr.push(data.docid)
+                    return arr
+                },
+                []
+            )
 
-
-                }
+            await SharedDocument.deleteMany({relationship_id: rel_id, docid: { $in: docids}, shared_by: cofferid})
             result_Msg = `${name} unshared with ${con.consumer_fullname()}.`
         }
 

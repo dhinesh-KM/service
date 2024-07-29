@@ -147,29 +147,46 @@ const relshipRequestSchema = Joi.object({
 })
 
 const relshipAcceptSchema = Joi.object({
-    response: Joi.string().valid('accept','reject').required().messages({
-        'any.only': "response must be either 'accept' or 'reject'."
-    }),
-    reject_reason: Joi.alternatives().conditional('response',{
-        is: 'reject',
-        then: Joi.string().max(255).optional(),
-        otherwise: Joi.forbidden()
+    response: Joi.string().valid('accept').required().messages({
+        'any.only': "response value must be 'accept'."
     })
 })
+
+const relshipRejectSchema = Joi.object({
+    response: Joi.string().valid('reject').required().messages({
+        'any.only': "response value must be 'reject'."
+    }),
+    reject_reason: Joi.string().max(255).optional()
+    })
 
 const docShareSchema = Joi.object({
     add: Joi.array().items( 
         Joi.object({
             doctype: Joi.string().valid('identity','personal').required().messages(
-                {'any.only': "doctype must be either 'identity' or 'personal'."}),
+                {'any.only': "doctype must be either 'identity' or 'personal'.",'any.required': 'doctype is required'}),
             docid: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages(
-                {'string.pattern.base' : 'consumerId must be a 24-character hexadecimal string.'})
+                {   'string.pattern.base' : 'consumerId must be a 24-character hexadecimal string.',
+                    'any.required': 'docid is required.'
+                })
         }))
-        .unique().required().messages(
-            { 'array.unique': 'Please check for duplicate entries and try again.'})
+        .required()
+})
+
+const docUnshareSchema = Joi.object({
+    remove: Joi.array().items( 
+        Joi.object({
+            doctype: Joi.string().valid('identity','personal').required().messages(
+                {'any.only': "doctype must be either 'identity' or 'personal'.",'any.required': 'doctype is required'}),
+            docid: Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().messages(
+                {   'string.pattern.base' : 'consumerId must be a 24-character hexadecimal string.',
+                    'any.required': 'docid is required.'
+                })
+        }))
+        .required()
 })
 
 
 
 module.exports = {registerSchema, emailVerifySchema, emailResendSchema, mobileResendSchema, mobileVerifySchema, profileUpdateSchema,
-     tokenSchema, passwordResendSchema, passwordVerifySchema, reminderSchema, relshipRequestSchema, relshipAcceptSchema, docShareSchema }
+    tokenSchema, passwordResendSchema, passwordVerifySchema, reminderSchema, relshipRequestSchema, relshipAcceptSchema, docShareSchema,
+    docUnshareSchema, relshipRejectSchema }
