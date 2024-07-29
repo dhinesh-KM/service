@@ -37,13 +37,13 @@ async function FetchData(next,req)
             return obj
         },{"identity": [], "personal": []})
         
-        const personal_payload = { docid: docid.personal}
+        //const personal_payload = { docid: docid.personal}
         const identity_payload = { docid: docid.identity}
 
-
+        console.log("(((((((((((")
         // Make an asynchronous POST request to the personal document  endpoint to get missing ids
         const response1 = await axios.post(`${config.domain}/api/v1/consumer/p-docs`, personal_payload,{ headers } );
-        console.log("=========",response1.data)
+        console.log("====//",response1.data)
         return [response1.data]
     }
     catch(err){
@@ -61,7 +61,7 @@ async function personalDocs(req,res,next)
 
         // Fetch data using the FetchData function, passing the next middleware function and the Authorization header
         const response = await FetchData(next,req);
-        console.log(response)
+        console.log("////",response)
         const ids = {personal: response[0].data,}// identity: response[1].data.data}
         req.body.docs = ids
         next();

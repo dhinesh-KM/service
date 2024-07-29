@@ -4,7 +4,7 @@ const authjwt = require('./middleware/authmiddleware');
 const {IsUser, con_citizenships} = require('./middleware/permission');
 const control = require('./controller/document_controller');
 const { validate_payload } = require('./validation/validator');
-const { personalDocument_Post, personalDocument_Update } = require('./validation/schema');
+const { personalDocument_Post, personalDocument_Update, missingIds } = require('./validation/schema');
 const multer = require('multer');
 const {  redisCacheMiddleware } = require('./middleware/redis');
 
@@ -27,8 +27,8 @@ router.get('/personal/:cat/:id/download', IsUser, redisCacheMiddleware({EX:3540}
 router.get('/personal/:cat/:id/view', IsUser, redisCacheMiddleware({EX:3540}), con_citizenships, control.viewDocument); 
 router.get('/personal/:cat/:id/details', IsUser, redisCacheMiddleware(), con_citizenships, control.documentDetails); 
 
-router.post('/p-docs', control.get_pdocs);
-router.get('/p-docs/details', control.get_pdocsDetails)
+router.post('/p-docs', validate_payload(missingIds), control.get_pdocs);
+router.post('/p-docs/details', control.get_pdocsDetails)
 
 
  

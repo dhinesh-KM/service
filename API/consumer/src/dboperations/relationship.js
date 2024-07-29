@@ -261,7 +261,7 @@ async function sprelationship_TagCount(data)
 async function shareDocs(data)
 {
     const {cofferid, params: {rel_id}, add, remove, docs} = data
-    let sharedWith, msg = '', name = "Documents", result_msg
+    let sharedWith, err_Msg = '', name = "Documents", result_Msg
     console.log("********",data)
 
     const spr = await SpecialRelationship.findById(rel_id)
@@ -275,12 +275,11 @@ async function shareDocs(data)
     {
         const id = docs[data].missingIds
         const len = docs[data].missingIds.length
-        console.log("ooo",id,len)
         if (len != 0)
-            msg += len == 1 ? `${data} document with this id ${id} not found\n` : 
-                              `${data} documents with these ids ${id} not found\n`
+            err_Msg += len == 1 ? `${data} document with this ID ${id} not found` : 
+                              `${data} documents with these IDs ${id} not found`
     }
-    if (msg.length != 0)
+    if (err_Msg.length != 0)
         throw new CustomError(msg, status.NOT_FOUND)
     
     sharedWith = spr.acceptor_uid
@@ -297,7 +296,7 @@ async function shareDocs(data)
                 {
                     const shrdoc = await SharedDocument.findOne({relationship_id: rel_id, docid: data.docid})
                     console.log("-----find", shrdoc)
-                    if (shrdoc.length == 0)
+                    if (!shrdoc)
                         await SharedDocument.create({
                             relationship_id: rel_id,
                             relationship_type: 'consumer to consumer',
@@ -307,7 +306,7 @@ async function shareDocs(data)
                             doctype: data.doctype
                         })
                 } 
-            result_msg = `${name} shared with ${con.consumer_fullname()}.`
+            result_Msg = `${name} shared with ${con.consumer_fullname()}.`
         }
     else
         {
@@ -322,34 +321,17 @@ async function shareDocs(data)
 
 
                 }
-            result_msg = `${name} unshared with ${con.consumer_fullname()}.`
+            result_Msg = `${name} unshared with ${con.consumer_fullname()}.`
         }
 
-    return { msg: `${name} shared with ${con.consumer_fullname()}.`}
+    return { msg: result_Msg}
 }
 
-async function share()
-{
-    const {cofferid, params: {rel_id} } = data
-
-    const spr = await SpecialRelationship.findById(rel_id)
-    if (spr == null)
-        throw new CustomError('Relationship not found.', status.NOT_FOUND)
-
-    let docs = await SharedDocument.find({relationship_id: rel_id})
-    
-    docs = docs.reduce( (obj,data) => { 
-            obj[data.doctype].push(data.docid)
-            return obj
-    },{personal: [], identity: []})
-
-    function modify(item)
-    {
-
-    }
-
-
-
+async function share(data)
+{ 
+    const {cofferid, params: {rel_id, docs} } = data
+    console.log("----",data)
+    return {data: docs}
 
 }
 
@@ -362,4 +344,5 @@ async function share()
 
 
 
-module.exports = {getConsumer, sprelationship_Request_Consumer, sprelationship_Accept_Consumer, getRelationships, sprelationship_TagCount, shareDocs}
+module.exports = {getConsumer, sprelationship_Request_Consumer, sprelationship_Accept_Consumer, getRelationships, sprelationship_TagCount, 
+    shareDocs, share}

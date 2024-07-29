@@ -17,7 +17,7 @@ const validate_payload =  ( schema ) => {
     return (req, res, next) => {
         const {value,error} = schema.validate(req.body, {abortEarly : false,  stripUnknown: true });
 
-        //console.log("v:",value,"\ne:",error)
+        console.log("v:",value,"\ne:",error)
         return result(req,res,next,value,error);
     }
 }

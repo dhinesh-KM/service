@@ -1,82 +1,90 @@
-const { SharedDocument} = require('../models/relationship')
+const { SpecialRelationship, SharedDocument } = require("../models/relationship")
+const axios = require("axios")
+const config = require("../configs/config")
+const CustomError = require("./customerror")
+const status = require("http-status")
 
 // Fetches user personal docs data from document service using Axios.
-async function FetchData(next,req)
-{
-    try{
-        
-        const headers = { "Authorization" : `${req.header('Authorization')}` };
+async function mis_Ids(req, res, next) {
+    try {
+        const headers = { Authorization: `${req.header("Authorization")}` }
 
         //seperate the personal doc ids and identity doc ids to make payload for subsequest http request
-        const docid = req.body.add.reduce( (obj,data) => { 
-            if (data.doctype == 'identity')
-                obj['identity'].push(data.docid)
-            else
-                obj['personal'].push(data.docid)
-            return obj
-        },{"identity": [], "personal": []})
-        
-        const personal_payload = { docid: docid.personal}
-        const identity_payload = { docid: docid.identity}
-
-
-        // Make an asynchronous POST request to the personal document  endpoint to get missing ids
-        const response1 = await axios.post(`${config.domain}/api/v1/consumer/p-docs`, personal_payload,{ headers } );
-        console.log("=========",response1.data)
-        return [response1.data]
-    }
-    catch(err){
-        next(`Axios error: ${err}`);
-    }
-}
-
-// Middleware function to fetch and process user personal docs data
-/* This function fetches data using the FetchData function, 
-    and attaches the processed data to the request object for further use in the middleware chain. */
-
-async function personalDocs(req,res,next)
-{
-    try{
-
-        // Fetch data using the FetchData function, passing the next middleware function and the Authorization header
-        const response = await FetchData(next,req);
-        console.log(response)
-        const ids = {personal: response[0].data,}// identity: response[1].data.data}
-        req.body.docs = ids
-        next();
-    }
-    catch(err)
-    {
-        next(err);
-    }
-}
-
-async function docDetails(req, res, next)
-{
-    try{
-        let docs = await SharedDocument.find({relationship_id: req.params.rel_id})
-    
-        docs = docs.reduce( (obj,data) => { 
+        const docid = req.body.add.reduce(
+            (obj, data) => {
                 obj[data.doctype].push(data.docid)
                 return obj
-        },{personal: [], identity: []})
+            },
+            { identity: [], personal: [] }
+        )
 
-        const personal_payload = { docid: docs.personal}
-        const identity_payload = { docid: docs.identity}
+        console.log(docid)
 
+        const personal_payload = { docid: docid.personal }
+        const identity_payload = { docid: docid.identity }
 
         // Make an asynchronous POST request to the personal document  endpoint to get missing ids
-        const personalResponse = await axios.get(`${config.domain}/api/v1/consumer/p-docs/details`, personal_payload,{ headers } );
-        return [personalResponse.data]
+        const personalResponse = await axios.post(`${config.domain}/api/v1/consumer/p-docs`,personal_payload,{ headers })
+        console.log("=========", personalResponse.data)
+        const ids = { personal: personalResponse.data.data } // identity: response[1].data.data}
+        req.body.docs = ids
+        next()
+    } catch (err) {
+        next(err)
     }
-    catch(err){
-        next(`Axios error: ${err}`);
-    }
-
 }
 
 
 
+async function docDetails(req, res, next) {
+    try {
 
+        const url = req.url.split("/").pop()
+        const headers = { Authorization: `${req.header("Authorization")}` }
+        const cofferid = req.user.coffer_id
+        let sharedBy
 
+        const spr = await SpecialRelationship.findById(req.params.rel_id)
+        if (spr == null)
+            throw new CustomError("Relationship not found.", status.NOT_FOUND)
+        if (url == "byme") 
+            {
+                console.log("11111111")
+                if (cofferid == spr.requestor_uid)  sharedBy = spr.requestor_uid
+                else if (cofferid == spr.acceptor_uid)  sharedBy = spr.acceptor_uid
+            }
+        if (url == 'withme')
+            {
+                console.log("2222222222")
+                if (cofferid == spr.requestor_uid)  sharedBy = spr.acceptor_uid
+                else if (cofferid == spr.acceptor_uid)  sharedBy = spr.requestor_uid
+            }
+        
+        
+        console.log(cofferid, sharedBy)
+        let docs = await SharedDocument.find({ relationship_id: req.params.rel_id, shared_by: sharedBy})
 
+        docs = docs.reduce(
+            (obj, data) => {
+                obj[data.doctype].push(data.docid)
+                return obj
+            },
+            { personal: [], identity: [] }
+        )
+
+        console.log("000000", docs)
+
+        const personal_payload = { docid: docs.personal }
+        const identity_payload = { docid: docs.identity }
+
+        console.log(personal_payload)
+        // Make an asynchronous POST request to the personal document  endpoint to get missing ids
+        const personalResponse = await axios.post(`${config.domain}/api/v1/consumer/p-docs/details`, personal_payload, { headers } )
+        req.params.docs = [...personalResponse.data.data]
+        next()
+    } catch (err) {
+        next(`Axios error: ${err}`)
+    }
+}
+
+module.exports = { docDetails, mis_Ids }

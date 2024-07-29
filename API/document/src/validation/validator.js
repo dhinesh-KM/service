@@ -12,7 +12,7 @@ const validate_payload =  ( schema ) => {
         const {value,error} = schema.validate(req.body, {abortEarly : false,  stripUnknown: true });
         
         if (error)
-            throw new CustomError(error.message.replace(/"\n/g, ''), 400);
+            throw new CustomError(error.message.replace(/"/g, ''), 400);
     
         // Set the validated payload (`value`) to `req.body` for further processing
         req.body = value;

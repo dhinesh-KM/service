@@ -31,7 +31,13 @@ const personalDocument_Update = Joi.object(
     }
 );
 
+const missingIds = Joi.object({
+    docid : Joi.array().items(
+        Joi.string().pattern(/^[0-9a-fA-F]{24}$/).required().
+        messages({'string.pattern.base' : 'consumerId must be a 24-character hexadecimal string.'})).required()
+})
 
 
 
-module.exports = {personalDocument_Post, personalDocument_Update};
+
+module.exports = {personalDocument_Post, personalDocument_Update, missingIds};
