@@ -101,7 +101,7 @@ async function sprelationship_Accept_Consumer(data)
     const spr = await SpecialRelationship.findById(relid)
     let msg
 
-    if (spr == null)
+    if (!spr )
         throw new CustomError('Relationship not found', status.NOT_FOUND)
     console.log(spr.isaccepted)
     // Throw error if relationship already accepted
@@ -330,9 +330,28 @@ async function shareDocs(data)
 
 async function share(data)
 { 
-    const {cofferid, params: {rel_id, docs} } = data
-    console.log("----",data)
+    const { params: {docs} } = data
     return {data: docs}
+
+}
+
+async function sprByRelId(rel_id)
+{
+    const spr = await SpecialRelationship.findById(rel_id)
+    if (!spr)
+        throw new CustomError('Relationship not found.', status.NOT_FOUND)
+    return spr
+}
+
+async function action()
+{
+    const {params: {rel_id}} = data
+
+    const spr = await sprByRelId(rel_id)
+
+    if (!spr.isaccepted)
+        throw new CustomError('Relationship not accepted.', status.ACCEPTED)
+
 
 }
 

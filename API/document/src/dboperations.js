@@ -283,6 +283,14 @@ async function getAllDocsDetails(data)
 
 }
 
+async function action(data)
+{
+    const { params: {doc, action}} = data
+    console.log(data)
+    const url = action == view ? await doc.view() : await doc.download()
+    return {url: url}
+}
+
 /*async function identityDoc_Operations(params,data)
 { 
     const {cat,cofferid, id,file,citizen, action,doc} = params;
@@ -324,4 +332,4 @@ async function getAllDocsDetails(data)
 }*/
 
 
-module.exports = { personalDoc_Operations, getAllDocs, getAllDocsDetails};
+module.exports = { personalDoc_Operations, getAllDocs, getAllDocsDetails, action};

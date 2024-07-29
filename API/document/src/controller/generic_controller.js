@@ -97,6 +97,7 @@ const retrive = (method) => {
     
     return asynchandler(async(req,res) => {
         const data = req.body
+        if (Object.keys(req.params).length > 0) data.params = req.params;
         data.cofferid = req.user.coffer_id 
         const result = await method(data);
         res.status(status.OK).json(result);

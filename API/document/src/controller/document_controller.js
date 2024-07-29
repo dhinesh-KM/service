@@ -27,7 +27,9 @@ const get_pdocs = retrive(db.getAllDocs)
 
 const get_pdocsDetails = retrive(db.getAllDocsDetails)
 
+const action = retrive(db.action)
+
 
 
 module.exports = {getCitzDocuments, getTagsCount, getTagDocuments, postDocument, updateDocument, downloadDocument, 
-    deleteDocument, viewDocument, documentDetails, post_Idocument, get_pdocs, get_pdocsDetails}
+    deleteDocument, viewDocument, documentDetails, post_Idocument, get_pdocs, get_pdocsDetails, action}

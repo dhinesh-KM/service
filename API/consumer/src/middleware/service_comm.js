@@ -63,7 +63,6 @@ async function docDetails(req, res, next) {
             }
         
         
-        console.log(cofferid, sharedBy)
         let docs = await SharedDocument.find({ relationship_id: req.params.rel_id, shared_by: sharedBy})
 
         docs = docs.reduce(
@@ -74,8 +73,6 @@ async function docDetails(req, res, next) {
             { personal: [], identity: [] }
         )
 
-        console.log("000000", docs)
-
         const personal_payload = { docid: docs.personal }
         const identity_payload = { docid: docs.identity }
 
@@ -85,8 +82,23 @@ async function docDetails(req, res, next) {
         req.params.docs = [...personalResponse.data.data]
         next()
     } catch (err) {
-        next(`Axios error: ${err}`)
+        next(err)
     }
+}
+
+async function action(req, res, next)
+{
+    const spr = await SpecialRelationship.findById(req.params.rel_id)
+    if (!spr)
+        throw new CustomError("Relationship not found.", status.NOT_FOUND)
+
+    if (!spr.isaccepted)
+        throw new CustomError('Relationship not accepted.', status.ACCEPTED)
+
+    
+
+
+
 }
 
 module.exports = { docDetails, mis_Ids }
