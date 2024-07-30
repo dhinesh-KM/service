@@ -4,7 +4,7 @@ const control = require("../controller/RS_controller")
 const { validate_payload } = require("../validation/validator")
 const { relshipRequestSchema, relshipAcceptSchema, docShareSchema, docUnshareSchema, relshipRejectSchema } = require("../validation/schema")
 const authjwt = require("../middleware/authmiddleware")
-const { docDetails, mis_Ids  } = require("../middleware/service_comm")
+const { docDetails, mis_Ids, action,  } = require("../middleware/service_comm")
 
 router.use(authjwt)
 
@@ -19,6 +19,7 @@ router.post("/relationships/:rel_id/docs/share",validate_payload(docShareSchema)
 router.post("/relationships/:rel_id/docs/unshare",validate_payload(docUnshareSchema), mis_Ids, control.relationshipDocs_Share)
 router.get("/relationships/:rel_id/docs/shared/byme", docDetails, control.docs_SharedByMe)
 router.get("/relationships/:rel_id/docs/shared/withme", docDetails, control.docs_SharedByMe)
+router.get("/relationships/:rel_id/:docid/:action", action, control.docs_Action )
 
 
 module.exports = router

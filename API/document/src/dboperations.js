@@ -286,8 +286,11 @@ async function getAllDocsDetails(data)
 async function action(data)
 {
     const { params: {doc, action}} = data
-    console.log(data)
-    const url = action == view ? await doc.view() : await doc.download()
+    let url
+    if (action == 'view')
+        url = await doc.view() 
+    if (action == 'download')
+        url = await doc.download()
     return {url: url}
 }
 

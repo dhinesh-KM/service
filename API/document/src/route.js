@@ -29,7 +29,7 @@ router.get('/personal/:cat/:id/details', IsUser, redisCacheMiddleware(), con_cit
 
 router.post('/p-docs', validate_payload(missingIds), control.get_pdocs);
 router.post('/p-docs/details', control.get_pdocsDetails)
-router.get('p-docs/:action', control.action)
+router.get('/p-docs/:action/:id', IsUser, control.action)
 
 
  

@@ -8,7 +8,7 @@ function authjwt(req,res,next) {
     const token = req.header('Authorization')
 
     if (!token)
-        return  next(new CustomError("Unauthorised",401)) 
+        return  next(new CustomError("Unauthorized",401)) 
 
 
     jwt.verify(token.split(" ")[1], config.secretKey, (err, decoded) => {

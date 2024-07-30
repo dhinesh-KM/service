@@ -19,6 +19,8 @@ const relationshipDocs_Unshare = controller.post(db.shareDocs);
 
 const docs_SharedByMe = controller.get(db.share);
 
+const docs_Action = controller.get(db.share);
+
 
 module.exports = {
     getAllUser,
@@ -29,5 +31,6 @@ module.exports = {
     create_SprRelShipAcp,
     relationshipDocs_Share,
     docs_SharedByMe,
-    relationshipDocs_Unshare
+    relationshipDocs_Unshare,
+    docs_Action
 };
