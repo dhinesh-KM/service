@@ -12,9 +12,10 @@ async function authjwt(req,res,next) {
         return next(new CustomError(status[status.UNAUTHORIZED],status.UNAUTHORIZED)) 
 
     try{
-
+        console.log(token,  config.jwtSecret)
         const decoded = jwt.verify(token.split(" ")[1], config.jwtSecret);
         // Set the decoded 'value' to `req.user` for further processing
+        console.log(decoded)
         req.user = decoded;
         next(); 
     }
