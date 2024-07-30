@@ -20,6 +20,7 @@ async function authjwt(req,res,next) {
     }
     catch(err){
         if (err) {
+            console.log(err)
             if (err.name == "JsonWebTokenError")
                 return next(new CustomError("Invalid token",status.BAD_REQUEST)) 
 
