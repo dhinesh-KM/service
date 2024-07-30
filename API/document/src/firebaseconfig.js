@@ -1,6 +1,19 @@
 const admin = require('firebase-admin');
-const serviceAccount = require('./serviceAccountkey.json');
+const config = require('./configs/config')
+const fs = require('fs');
+const path = require('path');
+
+// Path to your JSON file
+const serviceAccount = path.resolve('/etc/secrets/secrets.json');
+//const serviceAccount = require('./serviceAccountkey.json');
 const {CustomError} = require('./middleware/customerror');
+
+/*const serviceAccount = { project_id: config.projectId, private_key: config.privateKey, client_email: config.clientEmail, type: config.type,
+    private_key_id: config.project_key_Id, //client_id:  ,auth_uri: ,token_uri:  ,auth_provider_x509_cert_url:  ,client_x509_cert_url:  ,
+    //universe_domain:  
+ }*/
+
+
 
 // Initialize the Firebase Admin SDK with service account credentials and specify the storage bucket
 admin.initializeApp({
