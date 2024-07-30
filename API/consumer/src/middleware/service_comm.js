@@ -20,14 +20,12 @@ async function mis_Ids(req, res, next) {
             { identity: [], personal: [] }
         )
 
-        console.log(docid)
 
         const personal_payload = { docid: docid.personal }
         const identity_payload = { docid: docid.identity }
 
         // Make an asynchronous POST request to the personal document  endpoint to get missing ids
         const personalResponse = await axios.post(`${config.domain}/api/v1/consumer/p-docs`,personal_payload,{ headers })
-        console.log("=========", personalResponse.data)
         const ids = { personal: personalResponse.data.data } // identity: response[1].data.data}
         req.body.docs = ids
         next()
@@ -64,13 +62,11 @@ async function docDetails(req, res, next) {
 
         if (url == "byme") 
             {
-                console.log("11111111")
                 if (cofferid == spr.requestor_uid)  sharedBy = spr.requestor_uid
                 else if (cofferid == spr.acceptor_uid)  sharedBy = spr.acceptor_uid
             }
         if (url == 'withme')
             {
-                console.log("2222222222")
                 if (cofferid == spr.requestor_uid)  sharedBy = spr.acceptor_uid
                 else if (cofferid == spr.acceptor_uid)  sharedBy = spr.requestor_uid
             }
@@ -111,7 +107,7 @@ async function action(req, res, next)
 
         const headers = { Authorization: `${req.header("Authorization")}` }
         const resp = await axios.get(`${config.domain}/api/v1/consumer/p-docs/${req.params.action}/${req.params.docid}`,{headers})
-        console.log(resp)
+
         req.params.url = resp.data.url
         next()
     }

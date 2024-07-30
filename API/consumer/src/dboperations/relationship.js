@@ -12,7 +12,6 @@ const mongoose = require('mongoose')
  */
 async function consumer_ByCofferid(cofferid)
 {
-    console.log(cofferid)
     const con = await Consumer.findOne({ coffer_id: cofferid})
     if (con)
         return con
@@ -51,7 +50,7 @@ async function sprelationship_Request_Consumer(data)
     const {cofferid, consumerId, description} = data //logged in user cofferid
     const con = await consumer_ByCofferid(cofferid)
     const acp = await Consumer.findById(consumerId)
-    console.log(con,acp)
+
     if (!acp)
         throw new CustomError('Consumer not found', status.NOT_FOUND)
 
@@ -103,7 +102,7 @@ async function sprelationship_Accept_Consumer(data)
 
     if (!spr )
         throw new CustomError('Relationship not found', status.NOT_FOUND)
-    console.log(spr.isaccepted)
+
     // Throw error if relationship already accepted
     if (spr.isaccepted) 
         throw new CustomError('Relationship already accepted.', status.CONFLICT)
@@ -263,7 +262,6 @@ async function shareDocs(data)
 {
     const {cofferid, params: {rel_id}, add, remove, docs} = data
     let sharedWith, err_Msg = '', name = "Documents", result_Msg
-    console.log("********",data)
 
     const spr = await SpecialRelationship.findById(rel_id)
     if (spr == null)
@@ -330,9 +328,7 @@ async function shareDocs(data)
 
 async function share(data)
 { 
-    console.log(data)
     const { params: {docs, url} } = data
-    console.log(docs,url)
     let result = docs != undefined ? docs : url
 
     return {data: result}
