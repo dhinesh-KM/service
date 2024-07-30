@@ -10,7 +10,7 @@ module.exports = {
   mongoURI: process.env.MONGO_URI_ATLAS,
   jwtSecret: process.env.SECRETKEY,
   domain: process.env.DOMAIN,
-  redisURI: process.env.REDIS_URI,
+  /*redisURI: process.env.REDIS_URI,
   projectId: process.env.PROJECT_ID,
   clientEmail: process.env.CLIENT_EMAIL,
   privateKey: process.env.PRIVATE_KEY,
@@ -21,5 +21,5 @@ module.exports = {
   TOKEN_URI: process.env.TOKEN_URI,
   AUTH_PROVIDER_X509_CERT_URL: process.env.AUTH_PROVIDER_X509_CERT_URL,
   CLIENT_X509_CERT_URL: process.env.CLIENT_X509_CERT_URL,
-  UNIVERSE_DOMAIN: process.env.UNIVERSE_DOMAIN,
+  UNIVERSE_DOMAIN: process.env.UNIVERSE_DOMAIN,*/
 }

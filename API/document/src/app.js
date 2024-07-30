@@ -9,7 +9,7 @@ const { CustomError } = require('./middleware/customerror');
 const status = require('http-status');
 
 // connect to Redis
-(async () => { await initializeRedisClient(); })();
+//(async () => { await initializeRedisClient(); })();
 
 
 const port = process.env.PORT || 3000; 
