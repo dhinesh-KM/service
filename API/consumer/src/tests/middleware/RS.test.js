@@ -3,7 +3,7 @@ const httpMocks = require('node-mocks-http')
 const axios = require('axios')
 const mongoose = require('mongoose')
 const config = require("../../configs/config")
-const {mis_Ids} = require('../../middleware/service_comm')
+const {mis_Ids, docDetails} = require('../../middleware/service_comm')
 const { SpecialRelationship, SharedDocument } = require("../../models/relationship")
 
 
@@ -34,7 +34,6 @@ describe( "mis_Ids middleware", () => {
             { doctype: "identity", docid: docid3}
              ]
 
-        //console.log(req.header,config.domain)
         const resp1 = {data : { data:  {docname: [ "personal" ],missingIds: [docid2]}}}
         const resp2 = {data : { data:  {docname: [ "identity" ],missingIds: []}}}
 
@@ -53,10 +52,57 @@ describe( "mis_Ids middleware", () => {
 describe( "doc_details mddleware", () => {
     let req,res,next
     const docid1 = new mongoose.Types.ObjectId().toString()
+    const docid2 = new mongoose.Types.ObjectId().toString()
     const sprid = new mongoose.Types.ObjectId().toString()
     const rel_id = new mongoose.Types.ObjectId().toString()
     const coffer_id1 = new mongoose.Types.ObjectId().toString()
     const coffer_id2 = new mongoose.Types.ObjectId().toString()
+    const sd_id1 = new mongoose.Types.ObjectId().toString()
+    const sd_id2 = new mongoose.Types.ObjectId().toString()
+    const shr = [{
+        _id: sd_id1,
+        relationship_id: rel_id,
+        relationship_type: "consumer to consumer",
+        shared_with: coffer_id1,
+        shared_by: coffer_id2,
+        docid: docid1,
+        doctype: "personal"
+    },
+    {
+        _id: sd_id2, 
+        relationship_id: rel_id,
+        relationship_type: "consumer to consumer",
+        shared_with: coffer_id2,
+        shared_by: coffer_id1,
+        docid: docid2,
+        doctype: "personal",
+      }
+]
+const shr_Data = [{
+    docname : "others",
+    description : "others desc",
+    docid : docid1,
+    category : "citizen_primary",
+    doctype : "personal",
+    country_affiliation : "citizen_primary",
+    filename : "file1.jpg",
+    url: "url",
+    content_type : "image/jpeg",
+    added_encryption : false
+    },
+    {
+        docname: "Health",
+        description: "prescribed medicine to improve immunity",
+        docid: docid2,
+        category: "citizen_primary",
+        doctype: "personal",
+        country_affiliation: "citizen_primary",
+        filename: "file2.jpg",
+        url: "url",
+        content_type: "image/jpeg",
+        added_encryption: false
+                }]
+
 
     beforeEach( () => {
         req = httpMocks.createRequest()
@@ -64,15 +110,43 @@ describe( "doc_details mddleware", () => {
         next = jest.fn()
     })
 
-    describe( "", async() => {
-        req.url = jest.fn().mockReturnValue('docs/shared/byme')
+    it( "shared by me;", async() => {
+        req.url = 'docs/shared/byme'
         req.header = jest.fn().mockReturnValue(`Bearer token`);
         req.user = {coffer_id: coffer_id1}
         req.params = {rel_id: rel_id}
         const spr = {_id: sprid, requestor_uid : coffer_id1, acceptor_uid: coffer_id2, isaccepted: true}
-        const shr = [{}]
+        
         SpecialRelationship.findById.mockResolvedValue(spr)
-        SharedDocument.find.mockResolvedValue()
+        SharedDocument.find.mockResolvedValue([shr[1]])
+
+        axios.post.mockResolvedValueOnce({data:{data: [shr_Data[1]]}})
+
+        await docDetails(req,res,next)
+
+        expect(axios.post).toHaveBeenCalledWith( `${config.domain}/api/v1/consumer/p-docs/details`, { docid: [docid2] },
+            { headers: { Authorization: "Bearer token" } })
+        expect(req.params.docs).toEqual([shr_Data[1]])
+
+    })
+
+    it( "shared with me;", async() => {
+        req.url = 'docs/shared/withme'
+        req.header = jest.fn().mockReturnValue(`Bearer token`);
+        req.user = {coffer_id: coffer_id1}
+        req.params = {rel_id: rel_id}
+        const spr = {_id: sprid, requestor_uid : coffer_id1, acceptor_uid: coffer_id2, isaccepted: true}
+        
+        SpecialRelationship.findById.mockResolvedValue(spr)
+        SharedDocument.find.mockResolvedValue([shr[0]])
+
+        axios.post.mockResolvedValueOnce({data:{data: [shr_Data[0]]}})
+
+        await docDetails(req,res,next)
+
+        expect(axios.post).toHaveBeenCalledWith( `${config.domain}/api/v1/consumer/p-docs/details`, { docid: [docid1] },
+            { headers: { Authorization: "Bearer token" } })
+        expect(req.params.docs).toEqual([shr_Data[0]])
 
     })
 

@@ -11,7 +11,6 @@ const { spr_ById } = require("../utils/findHelpers")
 async function mis_Ids(req, res, next) {
     try {
         const headers = { Authorization: `${req.header("Authorization")}` }
-
         const body = req.body.add != undefined ? req.body.add : req.body.remove
         let personalResponse, identityResponse, ids = { }
 
@@ -64,12 +63,11 @@ async function mis_Ids(req, res, next) {
  */
 async function docDetails(req, res, next) {
     try {
-
         const url = req.url.split("/").pop()
         const headers = { Authorization: `${req.header("Authorization")}` }
+
         const cofferid = req.user.coffer_id
         let sharedBy, personalResponse, identityResponse, data = []
-
         const spr = await spr_ById(req.params.rel_id)
 
         if (url == "byme") 
@@ -83,9 +81,7 @@ async function docDetails(req, res, next) {
                 else if (cofferid == spr.acceptor_uid)  sharedBy = spr.requestor_uid
             }
         
-        
         let docs = await SharedDocument.find({ relationship_id: req.params.rel_id, shared_by: sharedBy})
-
         docs = docs.reduce(
             (obj, data) => {
                 obj[data.doctype].push(data.docid)

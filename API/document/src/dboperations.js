@@ -99,7 +99,6 @@ async function personalDoc_Operations(params,data)
     {
         case 'create':
             {
-                console.log("create", params)
                 if(!file)
                     throw new CustomError('File is not provided', status.BAD_REQUEST)
 
@@ -228,9 +227,7 @@ async function getAllDocs(data)
 {
     
     const {docid, cofferid} = data
-    console.log(data)
     const ids = docid.map(id => new mongoose.Types.ObjectId(id));
-    console.log(ids)
     const pdocs = await PersonalDocument.aggregate([
         {
           $match: {
@@ -255,7 +252,6 @@ async function getAllDocs(data)
           }
         }
       ]).exec()
-    console.log("pdocs ",pdocs)
     const [mis_Ids,names] = pdocs.length == 0 ? [ids,[]] :  [pdocs[0].missingIds,pdocs[0].existingNames]
     
     return {data: {docname: names, missingIds: mis_Ids}}
@@ -264,11 +260,8 @@ async function getAllDocs(data)
 async function getAllDocsDetails(data)
 {
     const {docid} = data
-    console.log(data)
     const ids = docid.map(id => new mongoose.Types.ObjectId(id));
-    console.log(ids)
     let docs = await PersonalDocument.find({_id : { $in: ids}})
-    console.log(docs)
     docs = await Promise.all(docs.map( async  (data) =>  { return {  'docname': data.name,
                                             'description': data.description,
                                             'docid': data._id,
