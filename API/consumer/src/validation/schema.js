@@ -168,8 +168,7 @@ const docShareSchema = Joi.object({
                 {   'string.pattern.base' : 'consumerId must be a 24-character hexadecimal string.',
                     'any.required': 'docid is required.'
                 })
-        }))
-        .required()
+        })).min(1).required()
 })
 
 const docUnshareSchema = Joi.object({

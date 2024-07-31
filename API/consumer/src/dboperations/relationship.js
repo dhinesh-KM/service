@@ -4,22 +4,8 @@ const CustomError = require('../middleware/customerror')
 const logger = require('../configs/logger')
 const status = require('http-status')
 const mongoose = require('mongoose')
-/**
- * 
- * @param {string} cofferid - cofferid of a consumer
- * @returns consumer object if consumer is found
- * @throws CustomError if consumer is not found
- */
-async function consumer_ByCofferid(cofferid)
-{
-    const con = await Consumer.findOne({ coffer_id: cofferid})
-    if (con)
-        return con
+const {consumer_ByCofferid, spr_ById} = require('../utils/findHelpers')
 
-    throw new CustomError('Consumer not found', status.NOT_FOUND)
-    
-
-}
 
 /**
  * getConsumer to get all consumers
@@ -96,12 +82,8 @@ async function sprelationship_Request_Consumer(data)
 async function sprelationship_Accept_Consumer(data)
 {
     const {response, cofferid, params: {relid}, reject_reason } = data
-    
-    const spr = await SpecialRelationship.findById(relid)
     let msg
-
-    if (!spr )
-        throw new CustomError('Relationship not found', status.NOT_FOUND)
+    const spr = await spr_ById(relid)
 
     // Throw error if relationship already accepted
     if (spr.isaccepted) 
@@ -263,9 +245,7 @@ async function shareDocs(data)
     const {cofferid, params: {rel_id}, add, remove, docs} = data
     let sharedWith, err_Msg = '', name = "Documents", result_Msg
 
-    const spr = await SpecialRelationship.findById(rel_id)
-    if (spr == null)
-        throw new CustomError('Relationship not found.', status.NOT_FOUND)
+    const spr = await spr_ById(rel_id)
 
     if (!spr.isaccepted)
         throw new CustomError('Relationship not accepted.', status.ACCEPTED)
@@ -273,7 +253,7 @@ async function shareDocs(data)
     for (const data in docs)
     {
         const id = docs[data].missingIds
-        const len = docs[data].missingIds.length
+        const len = id.length
         if (len != 0)
             err_Msg += len == 1 ? `${data} document with this ID ${id} not found` : 
                               `${data} documents with these IDs ${id} not found`

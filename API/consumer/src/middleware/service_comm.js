@@ -3,6 +3,9 @@ const axios = require("axios")
 const config = require("../configs/config")
 const CustomError = require("./customerror")
 const status = require("http-status")
+const { spr_ById } = require("../utils/findHelpers")
+
+
 
 // Fetches user personal docs data from document service using Axios.
 async function mis_Ids(req, res, next) {
@@ -10,6 +13,7 @@ async function mis_Ids(req, res, next) {
         const headers = { Authorization: `${req.header("Authorization")}` }
 
         const body = req.body.add != undefined ? req.body.add : req.body.remove
+        let personalResponse, identityResponse, ids = { }
 
         //seperate the personal doc ids and identity doc ids to make payload for subsequest http request
         const docid = body.reduce(
@@ -20,16 +24,26 @@ async function mis_Ids(req, res, next) {
             { identity: [], personal: [] }
         )
 
-
         const personal_payload = { docid: docid.personal }
         const identity_payload = { docid: docid.identity }
 
-        // Make an asynchronous POST request to the personal document  endpoint to get missing ids
-        const personalResponse = await axios.post(`${config.domain}/api/v1/consumer/p-docs`,personal_payload,{ headers })
-        const ids = { personal: personalResponse.data.data } // identity: response[1].data.data}
+        
+        if (docid.personal.length != 0)
+            {
+                personalResponse = await axios.post(`${config.domain}/api/v1/consumer/p-docs`,personal_payload,{ headers })
+                ids = {personal : personalResponse.data.data}
+            }
+
+        /*if (docid.identity.length != 0)
+            {
+                identityResponse = await axios.post(`${config.domain}/api/v1/consumer/i-docs`,identity_payload,{ headers })
+                ids = {...ids, identity: identityResponse.data.data}
+            }*/
+
         req.body.docs = ids
         next()
-    } catch (err) {
+    } 
+    catch (err) {
         next(err)
     }
 }
@@ -54,11 +68,9 @@ async function docDetails(req, res, next) {
         const url = req.url.split("/").pop()
         const headers = { Authorization: `${req.header("Authorization")}` }
         const cofferid = req.user.coffer_id
-        let sharedBy
+        let sharedBy, personalResponse, identityResponse, data = []
 
-        const spr = await SpecialRelationship.findById(req.params.rel_id)
-        if (!spr)
-            throw new CustomError("Relationship not found.", status.NOT_FOUND)
+        const spr = await spr_ById(req.params.rel_id)
 
         if (url == "byme") 
             {
@@ -85,9 +97,18 @@ async function docDetails(req, res, next) {
         const personal_payload = { docid: docs.personal }
         const identity_payload = { docid: docs.identity }
 
-        // Make an asynchronous POST request to the personal document  endpoint to get missing ids
-        const personalResponse = await axios.post(`${config.domain}/api/v1/consumer/p-docs/details`, personal_payload, { headers } )
-        req.params.docs = [...personalResponse.data.data]
+        if (docs.personal.length != 0)
+            {
+                personalResponse = await axios.post(`${config.domain}/api/v1/consumer/p-docs/details`, personal_payload, { headers } )
+                data = [...personalResponse.data.data]
+            }
+        
+        if (docs.identity.length != 0)
+            {
+                identityResponse = await axios.post(`${config.domain}/api/v1/consumer/i-docs/details`, identity_payload, { headers } )
+                data = [...data, ...identityResponse.data.data]
+            }
+        req.params.docs = data
         next()
     } 
     catch (err) {
@@ -98,9 +119,7 @@ async function docDetails(req, res, next) {
 async function action(req, res, next)
 {
     try{
-        const spr = await SpecialRelationship.findById(req.params.rel_id)
-        if (!spr)
-            throw new CustomError("Relationship not found.", status.NOT_FOUND)
+        const spr = await spr_ById(req.params.rel_id)
 
         if (!spr.isaccepted)
             throw new CustomError('Relationship not accepted.', status.ACCEPTED)
