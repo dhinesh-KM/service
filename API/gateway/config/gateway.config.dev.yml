@@ -1,26 +1,26 @@
 http:
-    port: 8080
+    port: ${PORT}
 admin:
-    port: 9876
-    host: localhost
+    port: ${ADMIN_PORT}
+    host: ${ADMIN_HOST}
 apiEndpoints:
     api:
-        host: localhost
+        host: ${API_HOST}
         paths: "/ip"
     consumer:
-        host: localhost
+        host: ${CONSUMER_HOST}
         paths: "/api/v1/consumer/*"
     document:
-        host: localhost
+        host: ${DOCUMENT_HOST}
         paths: "/api/v1/document/*"
 
 serviceEndpoints:
     httpbin:
-        url: "https://httpbin.org"
+        url: ${HTTPBIN_URL}
     consumerService:
-        url: "http://localhost:8000"
+        url: ${CONSUMER_SERVICE_URL}
     documentService:
-        url: "http://localhost:6000"
+        url: ${DOCUMENT_SERVICE_URL}
 policies:
     - basic-auth
     - cors

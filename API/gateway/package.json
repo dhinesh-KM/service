@@ -1,4 +1,8 @@
 {
+  "scripts": {
+    "start:dev": "SET NODE_ENV=dev && eg gateway start --config config/gateway.config.dev.yml",
+    "start:prod": "NODE_ENV=production eg gateway start --config config/gateway.config.prod.yml"
+  },
   "dependencies": {
     "express-gateway": "^1.16.11"
   }
