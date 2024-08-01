@@ -109,7 +109,7 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemas/document/PersonalProfileResponse"
+                                $ref: "#/components/schemas/PersonalProfileResponse"
 
     /consumer/profile/update:
         patch:
