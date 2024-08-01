@@ -56,7 +56,6 @@ const types_validate =  (req, res, next) => {
 }
 
 const forget_validator = (req, res, next) => {
-    console.log(req.params)
     const {verify_type} = req.params;
     let schemaToValidate =  verify_type == 'email' ? schema.emailResendSchema : schema.mobileResendSchema;
     const {value , error} = schemaToValidate.validate(req.body, { stripUnknown: true })

@@ -29,7 +29,6 @@ const p_post = (method) => {
 
 const get = (method) => {
     return async (req, res, next) => {
-        console.log("-----------------", Object.keys(req.params).length);
 
         const data = { cofferid: req.user.coffer_id };
         if (Object.keys(req.params).length > 0) data.params = req.params;

@@ -783,7 +783,7 @@ paths:
                                         properties:
                                             doctype:
                                                 type: string
-                                                example: Personal
+                                                example: personal
                                             docid:
                                                 type: string
                                                 example: 66975832aeac634f1a8abc83
@@ -1251,16 +1251,10 @@ components:
                     format: binary
                     description: The file to upload
                 tags:
-                    type: array
-                    items:
-                        type: string
-                        enum:
-                            - Identity
-                            - Health
-                            - Personal
-                            - Finance
-                            - Legal
+                    type: string
+                    example: [\"Identity\", \"Personal\", \"Legal\", \"Finance\", \"Health\"]
                     description: Array of strings
+
             required:
                 - name
                 - description
