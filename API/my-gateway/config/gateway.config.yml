@@ -22,20 +22,8 @@ serviceEndpoints:
         url: ${DOCUMENT_SERVICE_URL}
 policies:
     - basic-auth
-    - cors:
-          - action:
-                origin: "*"
-                methods:
-                    - GET
-                    - POST
-                    - PUT
-                    - PATCH
-                    - DELETE
-                credentials: true
-    - log:
-          - action:
-                message: "Request received"
-                level: "info"
+    - cors
+    - log
     - expression
     - key-auth
     - oauth2
@@ -59,8 +47,20 @@ pipelines:
         policies:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
-            - cors
-            - log
+            - cors:
+                  - action:
+                        origin: "*"
+                        methods:
+                            - GET
+                            - POST
+                            - PUT
+                            - PATCH
+                            - DELETE
+                        credentials: true
+            - log:
+                  - action:
+                        message: "consumer received"
+                        level: "info"
             - proxy:
                   - action:
                         serviceEndpoint: consumerService
@@ -72,8 +72,20 @@ pipelines:
         policies:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
-            - cors
-            - log
+            - cors:
+                  - action:
+                        origin: "*"
+                        methods:
+                            - GET
+                            - POST
+                            - PUT
+                            - PATCH
+                            - DELETE
+                        credentials: true
+            - log:
+                  - action:
+                        message: "document received"
+                        level: "info"
             - proxy:
                   - action:
                         serviceEndpoint: documentService
