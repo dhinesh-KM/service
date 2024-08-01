@@ -1254,7 +1254,18 @@ components:
                     type: array
                     items:
                         type: string
+                        enum:
+                            - Identity
+                            - Health
+                            - Personal
+                            - Finance
+                            - Legal
                     description: Array of strings
+            required:
+                - name
+                - description
+                - file
+                - tags
 
         pdocupdateRequest:
             type: object
