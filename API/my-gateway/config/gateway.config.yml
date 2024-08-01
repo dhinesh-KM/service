@@ -8,24 +8,36 @@ apiEndpoints:
         host: localhost
         paths: "/ip"
     consumer:
-        host: ${CONSUMER_HOST:-localhost}
+        host: "*"
         path: "/api/v1/consumer/*"
     document:
-        host: ${DOCUMENT_HOST}
+        host: "*"
         path: "/api/v1/document/*"
 serviceEndpoints:
     httpbin:
         url: "https://httpbin.org"
     consumerService:
-        url: ${CONSUMER_SERVICE_URL:-http://localhost:8000}
+        url: ${CONSUMER_SERVICE_URL}
     documentService:
-        url: ${DOCUMENT_SERVICE_URL:-http://localhost:6000}
+        url: ${DOCUMENT_SERVICE_URL}
 policies:
     - basic-auth
-    - cors
+    - cors:
+          - action:
+                origin: "*"
+                methods:
+                    - GET
+                    - POST
+                    - PUT
+                    - PATCH
+                    - DELETE
+                credentials: true
+    - log:
+          - action:
+                message: "Request received"
+                level: "info"
     - expression
     - key-auth
-    - log
     - oauth2
     - proxy
     - rate-limit
@@ -47,6 +59,8 @@ pipelines:
         policies:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
+            - cors
+            - log
             - proxy:
                   - action:
                         serviceEndpoint: consumerService
@@ -58,6 +72,8 @@ pipelines:
         policies:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
+            - cors
+            - log
             - proxy:
                   - action:
                         serviceEndpoint: documentService
