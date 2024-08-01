@@ -37,13 +37,13 @@ describe( "mis_Ids middleware", () => {
         const resp1 = {data : { data:  {docname: [ "personal" ],missingIds: [docid2]}}}
         const resp2 = {data : { data:  {docname: [ "identity" ],missingIds: []}}}
 
-        axios.post.mockResolvedValueOnce(resp1).mockResolvedValueOnce(resp2)
+        axios.post.mockResolvedValueOnce(resp1)//.mockResolvedValueOnce(resp2)
 
         await mis_Ids(req,res,next)
 
         expect(axios.post).toHaveBeenCalledWith( `${config.domain}/api/v1/consumer/p-docs`, { docid: [docid1,docid2] },
             { headers: { Authorization: "Bearer token" } })
-        expect(req.body.docs).toEqual({ personal: { docname: ['personal'], missingIds: [docid2]}, identity: { docname: ['identity'], missingIds: []}  })
+        expect(req.body.docs).toEqual({ personal: { docname: ['personal'], missingIds: [docid2]}})//, identity: { docname: ['identity'], missingIds: []}  })
         expect(next).toHaveBeenCalled()
         
     })

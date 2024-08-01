@@ -44,7 +44,7 @@ app.use(express.urlencoded({ extended: true })); // Middleware to parse incoming
 // Importing the document router module and Mounting the document router at '/consumers' endpoint
 const DocRouter = require('./route');
 
-app.use('/api/v1/consumer',DocRouter);
+app.use('/api/v1/document',DocRouter);
 
 app.use((req, res, next) => {
     next(new CustomError('Resource not found', status.NOT_FOUND))
