@@ -5,12 +5,12 @@ info:
     version: 1.0.1
 servers:
     #- url: http://127.0.0.1:8000/api/v1/consumer
-    - url: https://api-gateway-aczp.onrender.com/api/v1/
+    - url: https://api-gateway-aczp.onrender.com/api/v1
     - url: https://consumer-service-l4xd.onrender.com/api/v1/consumer
     - url: https://document-service-d6nf.onrender.com/api/v1/document
 
 paths:
-    consumer/login:
+    /consumer/login:
         post:
             summary: consumer Login
             description: Endpoint to authenticate consumer
@@ -36,7 +36,7 @@ paths:
                 401:
                     description: Unauthorized
 
-    consumer/register:
+    /consumer/register:
         post:
             tags:
                 - Register
@@ -55,7 +55,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/RegisterResponse"
 
-    consumer/register/{verify_type}/token/{token_type}:
+    /consumer/register/{verify_type}/token/{token_type}:
         patch:
             tags:
                 - Register
@@ -93,7 +93,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/VerifyResponse"
 
-    consumer/profile:
+    /consumer/profile:
         get:
             tags:
                 - Profile
@@ -109,9 +109,9 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: "#/components/schemasdocument/PersonalProfileResponse"
+                                $ref: "#/components/schemas/document/PersonalProfileResponse"
 
-    consumer/profile/update:
+    /consumer/profile/update:
         patch:
             tags:
                 - Profile
@@ -133,7 +133,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/UpdateResponse"
 
-    consumer/profile/{verify_type}:
+    /consumer/profile/{verify_type}:
         patch:
             tags:
                 - Profile
@@ -169,7 +169,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/VerifyResponse"
 
-    consumer/forgot/{verify_type}:
+    /consumer/forgot/{verify_type}:
         patch:
             tags:
                 - Forgot Password
@@ -206,7 +206,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/ResetPasswordResponse"
 
-    consumer/forgot/{verify_type}/token/{token_type}:
+    /consumer/forgot/{verify_type}/token/{token_type}:
         patch:
             tags:
                 - Forgot Password
@@ -244,7 +244,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/ResetPasswordSuccessResponse"
 
-    consumer/reminders/add:
+    /consumer/reminders/add:
         post:
             tags:
                 - reminder
@@ -272,7 +272,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/Reminder"
 
-    consumer/reminders:
+    /consumer/reminders:
         get:
             tags:
                 - reminder
@@ -299,7 +299,7 @@ paths:
                                             type: string
                                             example: 2024-06-19T15:30:00Z
 
-    consumer/reminders/{remid}/delete:
+    /consumer/reminders/{remid}/delete:
         delete:
             tags:
                 - reminder
@@ -325,7 +325,7 @@ paths:
                 500:
                     description: Internal server error
 
-    document/personal/{cat}:
+    /document/personal/{cat}:
         get:
             tags:
                 - Personal Document
@@ -347,7 +347,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/citzdocs"
 
-    document/personal/tagged/{cat}/{tag}:
+    /document/personal/tagged/{cat}/{tag}:
         get:
             tags:
                 - Personal Document
@@ -381,7 +381,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/citzdocs"
 
-    document/personal/counts/{cat}:
+    /document/personal/counts/{cat}:
         get:
             tags:
                 - Personal Document
@@ -402,7 +402,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/tags"
 
-    document/personal/{cat}/add:
+    /document/personal/{cat}/add:
         post:
             tags:
                 - Personal Document
@@ -430,7 +430,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/pdocaddResponse"
 
-    document/personal/{cat}/{id}/update:
+    /document/personal/{cat}/{id}/update:
         patch:
             tags:
                 - Personal Document
@@ -465,7 +465,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/pdocupdateResponse"
 
-    document/personal/{cat}/{id}/download:
+    /document/personal/{cat}/{id}/download:
         get:
             tags:
                 - Personal Document
@@ -493,7 +493,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/downloadresponse"
 
-    document/personal/{cat}/{id}/view:
+    /document/personal/{cat}/{id}/view:
         get:
             tags:
                 - Personal Document
@@ -521,7 +521,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/downloadresponse"
 
-    document/personal/{cat}/{id}/details:
+    /document/personal/{cat}/{id}/details:
         get:
             tags:
                 - Personal Document
@@ -549,7 +549,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/DetailsResponse"
 
-    document/personal/{cat}/{id}/delete:
+    /document/personal/{cat}/{id}/delete:
         delete:
             tags:
                 - Personal Document
@@ -577,7 +577,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/DeleteResponse"
 
-    consumer/relationships:
+    /consumer/relationships:
         get:
             tags:
                 - Relationship
@@ -593,7 +593,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/getRelResponse"
 
-    consumer/relationships/tagcount:
+    /consumer/relationships/tagcount:
         get:
             tags:
                 - Relationship
@@ -609,7 +609,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/getRelTagResponse"
 
-    consumer/relationships/bytag/{tag}:
+    /consumer/relationships/bytag/{tag}:
         get:
             tags:
                 - Relationship
@@ -635,7 +635,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/getRelResponse"
 
-    consumer/sprelationship/search/consumer:
+    /consumer/sprelationship/search/consumer:
         get:
             tags:
                 - Relationship
@@ -651,7 +651,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/getAllConRes"
 
-    consumer/sprelationship/request/consumer:
+    /consumer/sprelationship/request/consumer:
         post:
             tags:
                 - Relationship
@@ -681,7 +681,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/relReq"
 
-    consumer/sprelationship/{relid}/accept:
+    /consumer/sprelationship/{relid}/accept:
         post:
             tags:
                 - Relationship
@@ -715,7 +715,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/relAcpRes"
 
-    consumer/dummyrelation/create:
+    /consumer/dummyrelation/create:
         post:
             tags:
                 - Relationship
@@ -738,7 +738,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/createDummyRes"
 
-    consumer/dummyrelation:
+    /consumer/dummyrelation:
         get:
             tags:
                 - Relationship
@@ -754,7 +754,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/getDummyRes"
 
-    consumer/relationships/{rel_id}/docs/share:
+    /consumer/relationships/{rel_id}/docs/share:
         post:
             tags:
                 - Relationship
@@ -796,7 +796,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/shareRes"
 
-    consumer/relationships/{rel_id}/docs/shared/byme:
+    /consumer/relationships/{rel_id}/docs/shared/byme:
         get:
             tags:
                 - Relationship
@@ -819,7 +819,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/shareByMeRes"
 
-    consumer/relationships/{rel_id}/docs/shared/withme:
+    /consumer/relationships/{rel_id}/docs/shared/withme:
         get:
             tags:
                 - Relationship
@@ -842,7 +842,7 @@ paths:
                             schema:
                                 $ref: "#/components/schemas/shareByMeRes"
 
-    consumer/relationships/{rel_id}/{docid}/{action}:
+    /consumer/relationships/{rel_id}/{docid}/{action}:
         get:
             tags:
                 - Relationship
