@@ -3,7 +3,7 @@ http:
     cors:
         origin:
             - "*"
-            - "https://editor.swagger.io"
+            - ${CORS}
         methods: "GET, POST, PUT, DELETE"
         credentials: true
 
@@ -16,8 +16,6 @@ apiEndpoints:
         path: "/api/v1/document/*"
 
 serviceEndpoints:
-    httpbin:
-        url: "https://httpbin.org"
     consumerService:
         url: ${CONSUMER_SERVICE_URL}
     documentService:
@@ -41,7 +39,7 @@ pipelines:
             - cors:
                   - action:
                         origin:
-                            - "https://editor.swagger.io"
+                            - ${CORS}
                             - "*"
                         methods: "GET, POST, PUT, DELETE"
                         credentials: true
@@ -61,7 +59,7 @@ pipelines:
             - cors:
                   - action:
                         origin:
-                            - "https://editor.swagger.io"
+                            - ${CORS}
                             - "*"
                         methods: "GET, POST, PUT, DELETE"
                         credentials: true
