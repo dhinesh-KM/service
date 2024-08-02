@@ -74,16 +74,15 @@ pipelines:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
             - cors:
-                  - action:
-                        origin:
-                            - "https://editor.swagger.io"
-                            - "*"
-                        methods:
-                            - GET
-                            - POST
-                            - PUT
-                            - PATCH
-                            - DELETE
+                  action:
+                      origin:
+                          - "*"
+                      methods:
+                          - GET
+                          - POST
+                          - PUT
+                          - PATCH
+                          - DELETE
             - log:
                   - action:
                         message: "document received"
