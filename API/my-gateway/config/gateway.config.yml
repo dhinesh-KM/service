@@ -49,7 +49,9 @@ pipelines:
             # - key-auth:
             - cors:
                   - action:
-                        origin: "*"
+                        origin:
+                            - "https://editor.swagger.io"
+                            - "*"
                         methods:
                             - GET
                             - POST
@@ -74,7 +76,9 @@ pipelines:
             # - key-auth:
             - cors:
                   - action:
-                        origin: "*"
+                        origin:
+                            - "https://editor.swagger.io"
+                            - "*"
                         methods:
                             - GET
                             - POST
