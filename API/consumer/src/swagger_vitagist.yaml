@@ -6,8 +6,8 @@ info:
 servers:
     #- url: http://127.0.0.1:8000/api/v1/consumer
     - url: https://api-gateway-aczp.onrender.com/api/v1
-    - url: https://consumer-service-l4xd.onrender.com/api/v1/consumer
-    - url: https://document-service-d6nf.onrender.com/api/v1/document
+    #- url: https://consumer-service-l4xd.onrender.com/api/v1/consumer
+    #- url: https://document-service-d6nf.onrender.com/api/v1/document
 
 paths:
     /consumer/login:
