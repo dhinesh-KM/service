@@ -58,7 +58,6 @@ pipelines:
                             - PUT
                             - PATCH
                             - DELETE
-                        credentials: true
             - log:
                   - action:
                         message: "consumer received"
@@ -85,7 +84,6 @@ pipelines:
                             - PUT
                             - PATCH
                             - DELETE
-                        credentials: true
             - log:
                   - action:
                         message: "document received"
