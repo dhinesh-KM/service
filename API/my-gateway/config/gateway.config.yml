@@ -5,9 +5,6 @@ http:
         methods: "GET, POST, PUT, DELETE"
 
 apiEndpoints:
-    api:
-        host: localhost
-        paths: "/ip"
     consumer:
         host: "*"
         path: "/api/v1/consumer/*"
@@ -31,17 +28,6 @@ policies:
     - proxy
     - rate-limit
 pipelines:
-    default:
-        apiEndpoints:
-            - api
-        policies:
-            # Uncomment `key-auth:` when instructed to in the Getting Started guide.
-            # - key-auth:
-            - proxy:
-                  - action:
-                        serviceEndpoint: httpbin
-                        changeOrigin: true
-
     consumerPipeline:
         apiEndpoints:
             - consumer
@@ -49,9 +35,11 @@ pipelines:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
             - cors:
-                  action:
-                      origin: "*"
-                      methods: "GET, POST, PUT, DELETE"
+                  - action:
+                        origin:
+                            - "https://editor.swagger.io"
+                            - "*"
+                        methods: "GET, POST, PUT, DELETE"
             - log:
                   - action:
                         message: "consumer received"
@@ -68,9 +56,11 @@ pipelines:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
             - cors:
-                  action:
-                      origin: "*"
-                      methods: "GET, POST, PUT, DELETE"
+                  - action:
+                        origin:
+                            - "https://editor.swagger.io"
+                            - "*"
+                        methods: "GET, POST, PUT, DELETE"
             - log:
                   - action:
                         message: "document received"
