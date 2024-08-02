@@ -1,1557 +1,1557 @@
 openapi: 3.0.3
 info:
-    title: API documenation
-    description: writing specs for API documentation
-    version: 1.0.1
+  title: API documenation
+  description: writing specs for API documentation
+  version: 1.0.1
 servers:
-    #- url: http://127.0.0.1:8000/api/v1/consumer
-    - url: https://api-gateway-aczp.onrender.com/api/v1
-    #- url: https://consumer-service-l4xd.onrender.com/api/v1/consumer
-    #- url: https://document-service-d6nf.onrender.com/api/v1/document
+  #- url: http://127.0.0.1:8000/api/v1/consumer
+  - url: https://api-gateway-rdji.onrender.com/api/v1
+  #- url: https://consumer-service-l4xd.onrender.com/api/v1/consumer
+  #- url: https://document-service-d6nf.onrender.com/api/v1/document
 
 paths:
-    /consumer/login:
-        post:
-            summary: consumer Login
-            description: Endpoint to authenticate consumer
-            tags:
-                - login
-            requestBody:
-                required: true
-                description: Login credentials
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/login"
-
-            responses:
-                200:
-                    description: Successful login
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/LoginResponse"
-                400:
-                    description: Invalid input
-                401:
-                    description: Unauthorized
-
-    /consumer/register:
-        post:
-            tags:
-                - Register
-            summary: Register a new user
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/register"
-            responses:
-                "201":
-                    description: consumer created successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/RegisterResponse"
-
-    /consumer/register/{verify_type}/token/{token_type}:
-        patch:
-            tags:
-                - Register
-            summary: verify details
-            parameters:
-                - in: path
-                  name: verify_type
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - email
-                          - mobile
-
-                - in: path
-                  name: token_type
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - resend
-                          - verify
-
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/verify"
-
-            responses:
-                "200":
-                    description: Verifies Email
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/VerifyResponse"
-
-    /consumer/profile:
-        get:
-            tags:
-                - Profile
-            description: Personal profile of Citizen
-            summary: Personal Profile of Citizen
-
-            security:
-                - bearerAuth: []
-
-            responses:
-                "200":
-                    description: Shows Personal profile
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/PersonalProfileResponse"
-
-    /consumer/profile/update:
-        patch:
-            tags:
-                - Profile
-            summary: Update a consumer by cofferid
-
-            security:
-                - bearerAuth: []
-
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/profile"
-            responses:
-                "200":
-                    description: Product updated successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/UpdateResponse"
-
-    /consumer/profile/{verify_type}:
-        patch:
-            tags:
-                - Profile
-            summary: verify details
-            parameters:
-                - in: path
-                  name: verify_type
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - email
-                          - mobile
-
-            security:
-                - bearerAuth: []
-
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                token:
-                                    type: string
-                                    example: e7a361c8c98d6637
-
-            responses:
-                "200":
-                    description: Verifies Email
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/VerifyResponse"
-
-    /consumer/forgot/{verify_type}:
-        patch:
-            tags:
-                - Forgot Password
-            summary: verify details
-            parameters:
-                - in: path
-                  name: verify_type
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - email
-                          - mobile
-
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                email:
-                                    type: string
-                                    format: email
-                                    example: johndoe@example.com
-                                mobile:
-                                    type: string
-                                    example: 1234567890
-
-            responses:
-                "200":
-                    description: token sent
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ResetPasswordResponse"
-
-    /consumer/forgot/{verify_type}/token/{token_type}:
-        patch:
-            tags:
-                - Forgot Password
-            summary: verify otp and password change
-            parameters:
-                - in: path
-                  name: verify_type
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - email
-                          - mobile
-
-                - in: path
-                  name: token_type
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - resend
-                          - verify
-
-            requestBody:
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/ResetPasswordRequest"
-
-            responses:
-                "200":
-                    description: Verifies Email
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ResetPasswordSuccessResponse"
-
-    /consumer/reminders/add:
-        post:
-            tags:
-                - reminder
-            summary: Add a new reminder
-            security:
-                - bearerAuth: []
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                message:
-                                    type: string
-                                    example: Don't forget to buy milk!
-                                target:
-                                    type: string
-                                    example: 2024-06-19T15:30:00Z
-            responses:
-                201:
-                    description: Reminder created successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/Reminder"
-
-    /consumer/reminders:
-        get:
-            tags:
-                - reminder
-            summary: Get all reminders
-            security:
-                - bearerAuth: []
-            responses:
-                200:
-                    description: A list of reminders
-                    content:
-                        application/json:
-                            schema:
-                                type: array
-                                items:
-                                    type: object
-                                    properties:
-                                        id:
-                                            type: string
-                                            example: 60f1a4f8b8d1a0001d71b1e2
-                                        message:
-                                            type: string
-                                            example: Don't forget to buy milk!
-                                        target:
-                                            type: string
-                                            example: 2024-06-19T15:30:00Z
-
-    /consumer/reminders/{remid}/delete:
-        delete:
-            tags:
-                - reminder
-            summary: Delete a reminder
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: remid
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-            responses:
-                200:
-                    description: Reminder deleted successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/ReminderResponse"
-                404:
-                    description: Reminder not found
-                500:
-                    description: Internal server error
-
-    /document/personal/{cat}:
-        get:
-            tags:
-                - Personal Document
-            summary: get personal docs based on citizenship
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/citzdocs"
-
-    /document/personal/tagged/{cat}/{tag}:
-        get:
-            tags:
-                - Personal Document
-            summary: get personal docs based on citizenship and tag
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-                - name: tag
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - Personal
-                          - Legal
-                          - Finance
-                          - Others
-                          - Health
-                          - LegalFinance
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/citzdocs"
-
-    /document/personal/counts/{cat}:
-        get:
-            tags:
-                - Personal Document
-            summary: get personal docs based on citizenship and tag
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/tags"
-
-    /document/personal/{cat}/add:
-        post:
-            tags:
-                - Personal Document
-            summary: add personal doc
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-            requestBody:
-                required: true
-                content:
-                    multipart/form-data:
-                        schema:
-                            $ref: "#/components/schemas/pdocaddRequest"
-
-            responses:
-                200:
-                    description: uploaded successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/pdocaddResponse"
-
-    /document/personal/{cat}/{id}/update:
-        patch:
-            tags:
-                - Personal Document
-            summary: update personal doc
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/pdocupdateRequest"
-
-            responses:
-                200:
-                    description: updated successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/pdocupdateResponse"
-
-    /document/personal/{cat}/{id}/download:
-        get:
-            tags:
-                - Personal Document
-            summary: download personal doc
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            responses:
-                200:
-                    description: downloaded successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/downloadresponse"
-
-    /document/personal/{cat}/{id}/view:
-        get:
-            tags:
-                - Personal Document
-            summary: view personal doc
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/downloadresponse"
-
-    /document/personal/{cat}/{id}/details:
-        get:
-            tags:
-                - Personal Document
-            summary: details of personal doc
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/DetailsResponse"
-
-    /document/personal/{cat}/{id}/delete:
-        delete:
-            tags:
-                - Personal Document
-            summary: delete personal doc
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: cat
-                  in: path
-                  required: true
-                  schema:
-                      $ref: "#/components/schemas/CitizenCategory"
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            responses:
-                200:
-                    description: deleted successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/DeleteResponse"
-
-    /consumer/relationships:
-        get:
-            tags:
-                - Relationship
-            summary: get all relationship
-            security:
-                - bearerAuth: []
-
-            responses:
-                200:
-                    description: Retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/getRelResponse"
-
-    /consumer/relationships/tagcount:
-        get:
-            tags:
-                - Relationship
-            summary: get tag count of relationship
-            security:
-                - bearerAuth: []
-
-            responses:
-                200:
-                    description: Retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/getRelTagResponse"
-
-    /consumer/relationships/bytag/{tag}:
-        get:
-            tags:
-                - Relationship
-            summary: get relationship by tag
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: tag
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - Personal
-                          - Lauditor
-                          - ContentCoffer
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/getRelResponse"
-
-    /consumer/sprelationship/search/consumer:
-        get:
-            tags:
-                - Relationship
-            summary: get all consumer
-            security:
-                - bearerAuth: []
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/getAllConRes"
-
-    /consumer/sprelationship/request/consumer:
-        post:
-            tags:
-                - Relationship
-            summary: relationship request for a consumer
-            security:
-                - bearerAuth: []
-
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                description:
-                                    type: string
-                                    example: Please accept the request
-                                consumerId:
-                                    type: string
-                                    example: 5dc538033320fc78228a4d8c
-
-            responses:
-                200:
-                    description: request sent successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/relReq"
-
-    /consumer/sprelationship/{relid}/accept:
-        post:
-            tags:
-                - Relationship
-            summary: relationship request accept by a consumer
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: relid
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                response:
-                                    type: string
-                                    example: accept
-
-            responses:
-                200:
-                    description: request sent successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/relAcpRes"
-
-    /consumer/dummyrelation/create:
-        post:
-            tags:
-                - Relationship
-            summary: add dummy relation
-            security:
-                - bearerAuth: []
-
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            $ref: "#/components/schemas/createDummyReq"
-
-            responses:
-                201:
-                    description: created successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/createDummyRes"
-
-    /consumer/dummyrelation:
-        get:
-            tags:
-                - Relationship
-            summary: get dummy relation
-            security:
-                - bearerAuth: []
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/getDummyRes"
-
-    /consumer/relationships/{rel_id}/docs/share:
-        post:
-            tags:
-                - Relationship
-            summary: documents share with a consumer
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: rel_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            requestBody:
-                required: true
-                content:
-                    application/json:
-                        schema:
-                            type: object
-                            properties:
-                                add:
-                                    type: array
-                                    items:
-                                        type: object
-                                        properties:
-                                            doctype:
-                                                type: string
-                                                example: personal
-                                            docid:
-                                                type: string
-                                                example: 66975832aeac634f1a8abc83
-
-            responses:
-                200:
-                    description: doc shared successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/shareRes"
-
-    /consumer/relationships/{rel_id}/docs/shared/byme:
-        get:
-            tags:
-                - Relationship
-            summary: documents share by me with a consumer
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: rel_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/shareByMeRes"
-
-    /consumer/relationships/{rel_id}/docs/shared/withme:
-        get:
-            tags:
-                - Relationship
-            summary: documents share with me by a consumer
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: rel_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/shareByMeRes"
-
-    /consumer/relationships/{rel_id}/{docid}/{action}:
-        get:
-            tags:
-                - Relationship
-            summary: documents with action
-            security:
-                - bearerAuth: []
-            parameters:
-                - name: rel_id
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-                - name: docid
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      example: 60f1a4f8b8d1a0001d71b1e2
-
-                - name: action
-                  in: path
-                  required: true
-                  schema:
-                      type: string
-                      enum:
-                          - view
-                          - download
-
-            responses:
-                200:
-                    description: retrived successfully
-                    content:
-                        application/json:
-                            schema:
-                                $ref: "#/components/schemas/downloadresponse"
-
-components:
-    schemas:
-        login:
-            type: object
-            properties:
-                action:
-                    type: string
-                    description: Type of action
-                    example: "login"
-                logintype:
-                    type: string
-                    description: Type of login
-                    example: "email"
-                email:
-                    type: string
-                    format: email
-                    description: User's email address
-                    example: "boomibalagan001@gmail.com"
-                password:
-                    type: string
-                    format: password
-                    description: User's password
-                    example: "#Boomi1234"
-
-        LoginResponse:
-            type: object
-            properties:
-                error:
-                    type: boolean
-                    description: Indicates whether an error occurred
-                message:
-                    type: string
-                    description: Message indicating the result of the login attempt
-                token:
-                    type: string
-                    description: JWT Token
-                data:
-                    type: object
-                    properties:
-                        coffer_id:
-                            type: string
-                            description: Coffer ID of the user
-                        custom_uid:
-                            type: string
-                            description: Custom user ID
-                        first_name:
-                            type: string
-                            description: User's first name
-                        last_name:
-                            type: string
-                            description: User's last name
-                        email_verified:
-                            type: boolean
-                            description: Indicates if the user's email is verified
-                        mobile_verified:
-                            type: boolean
-                            description: Indicates if the user's mobile number is verified
-                        lastlogin:
-                            type: string
-                            format: date-time
-                            description: Timestamp of the user's last login
-                        email:
-                            type: string
-                            format: email
-                            description: User's email address
-                        mobile:
-                            type: string
-                            description: User's mobile number
-                        pk:
-                            type: string
-                            description: Primary key of the user
-        profile:
-            type: object
-            properties:
-                first_name:
-                    type: string
-                    example: John
-                middle_name:
-                    type: string
-                    example: fricks
-                last_name:
-                    type: string
-                    example: Doe
-                email:
-                    type: string
-                    format: email
-                    example: johndoe@example.com
-                mobile:
-                    type: string
-                    example: 1234567890
-                old_password:
-                    type: string
-                    format: password
-                    example: password123
-                new_password:
-                    type: string
-                    format: password
-                    example: password123
-                confirm_password:
-                    type: string
-                    format: password
-                    example: password123
-
-        register:
-            type: object
-            properties:
-                first_name:
-                    type: string
-                    example: John
-                last_name:
-                    type: string
-                    example: Doe
-                country:
-                    type: string
-                    example: USA
-                email:
-                    type: string
-                    format: email
-                    example: johndoe@example.com
-                mobile:
-                    type: string
-                    example: 1234567890
-                password:
-                    type: string
-                    format: password
-                    example: password123
-                confirm_password:
-                    type: string
-                    format: password
-                    example: password123
-            required:
-                - first_name
-                - last_name
-                - country
-                - password
-                - confirm_password
-
-        verify:
-            type: object
-            properties:
-                email:
-                    type: string
-                    example: abc@gmail.com
-                mobile:
-                    type: string
-                    example: 1234567890
-                token:
-                    type: string
-                    example: e7a361c8c98d6637
-
-        VerifyResponse:
-            type: object
-            properties:
-                msg1:
-                    type: string
-                    example: Email verification successful.
-                msg:
-                    type: string
-                    example: mobile verification successful.
-
-        PersonalProfileResponse:
-            type: object
-            properties:
-                data:
-                    type: object
-                    properties:
-                        first_name:
-                            type: string
-                            example: Vengadesh
-                        last_name:
-                            type: string
-                            example: R
-                        middle_name:
-                            type: string
-                            example: Waran
-                        dob:
-                            type: string
-                            example: 19-01-1977
-                        email:
-                            type: string
-                            example: abc@gmail.com
-                        mobile:
-                            type: string
-                            example: 1664633453
-                        citizen:
-                            type: array
-                            items:
-                                type: object
-                                properties:
-                                    country:
-                                        type: string
-                                        example: India
-                                    affiliation_type:
-                                        type: string
-                                        example: citz
-                                    mobile_phone:
-                                        type: string
-                                        example:
-                                    home_address:
-                                        type: string
-                                        example: Thanjavur
-                                    alt_phone:
-                                        type: string
-                                        example:
-                                    index:
-                                        type: string
-                                        example: citizen_primary
-                                    work_phone:
-                                        type: string
-                                        example:
-                                    work_address:
-                                        type: string
-                                        example: Karanataka,Bangalore
-
-        ResetPasswordResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: A token to reset your password is sent to your mobile. It is valid for 5 mins
-                coffer_id:
-                    type: string
-                    example: 939d55f9ef8908ba
-
-        ResetPasswordRequest:
-            type: object
-            properties:
-                coffer_id:
-                    type: string
-                    example: 939d55f9ef8908ba
-                otp:
-                    type: string
-                    example: 773922
-                password:
-                    type: string
-                    example: 000000
-                confirm_password:
-                    type: string
-                    example: 000000
-            required:
-                - coffer_id
-                - otp
-                - password
-                - confirm_password
-
-        ResetPasswordSuccessResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: Password reset successful. Please login to access your Coffer.
-
-        UpdateResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: profile details updated successfully
-
-        RegisterResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: consumer creted successfully
-
-        Reminder:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: reminder created successfully
-
-        ReminderResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: reminder deleted successfully
-
-        citzdocs:
-            type: object
-            properties:
-                data:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            category:
-                                type: string
-                                example: citizen_primary
-                            name:
-                                type: string
-                                example: dhinesh
-                            description:
-                                type: string
-                                example: finance docs
-                            expiration_date:
-                                type: string
-                                example: Jun 29, 2022
-                            filename:
-                                type: string
-                                example: image1.jpg
-                            filesize:
-                                type: string
-                                example: 22491
-                            content_type:
-                                type: string
-                                example: image/png
-                            created:
-                                type: string
-                                example: Jun 17, 2022
-                            tags:
-                                type: array
-                                items:
-                                    type: string
-                                    example: Finance
-                            subtags:
-                                type: array
-                                items:
-                                    type: string
-                                    example: ""
-                            id:
-                                type: string
-                                example: 62ac30eb863ef503b8b0f17e
-                            country:
-                                type: string
-                                example: India
-                            url:
-                                type: string
-
-        tags:
-            type: object
-            properties:
-                data:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            tagName:
-                                type: string
-                                example: Finance
-                            count:
-                                type: number
-                                example: 1
-
-        pdocaddResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: Document uploaded successfully
-
-        pdocaddRequest:
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: Name of the uploading file
-                description:
-                    type: string
-                    description: Description of the file
-                expiration_date:
-                    type: string
-                    example: 30-07-2024
-                file:
-                    type: string
-                    format: binary
-                    description: The file to upload
-                tags:
-                    type: string
-                    example: [\"Identity\", \"Personal\", \"Legal\", \"Finance\", \"Health\"]
-                    description: Array of strings
-
-            required:
-                - name
-                - description
-                - file
-                - tags
-
-        pdocupdateRequest:
-            type: object
-            properties:
-                name:
-                    type: string
-                    description: Name of the uploading file
-                description:
-                    type: string
-                    description: Description of the file
-                expiration_date:
-                    type: string
-                    example: 30-07-2024
-                tags:
-                    type: array
-                    items:
-                        type: string
-                    description: Array of strings
-
-        pdocupdateResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: Document updated successfully
-
-        CitizenCategory:
+  /consumer/login:
+    post:
+      summary: consumer Login
+      description: Endpoint to authenticate consumer
+      tags:
+        - login
+      requestBody:
+        required: true
+        description: Login credentials
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/login"
+
+      responses:
+        200:
+          description: Successful login
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/LoginResponse"
+        400:
+          description: Invalid input
+        401:
+          description: Unauthorized
+
+  /consumer/register:
+    post:
+      tags:
+        - Register
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/register"
+      responses:
+        "201":
+          description: consumer created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegisterResponse"
+
+  /consumer/register/{verify_type}/token/{token_type}:
+    patch:
+      tags:
+        - Register
+      summary: verify details
+      parameters:
+        - in: path
+          name: verify_type
+          required: true
+          schema:
             type: string
             enum:
-                - citizen_primary
-                - citizen_secondary
-                - citizen_third
-                - citizen_fourth
+              - email
+              - mobile
 
-        downloadresponse:
-            type: object
-            properties:
-                url:
-                    type: string
-                    format: uri
+        - in: path
+          name: token_type
+          required: true
+          schema:
+            type: string
+            enum:
+              - resend
+              - verify
 
-        DetailsResponse:
-            type: object
-            properties:
-                name:
-                    type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/verify"
+
+      responses:
+        "200":
+          description: Verifies Email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+  /consumer/profile:
+    get:
+      tags:
+        - Profile
+      description: Personal profile of Citizen
+      summary: Personal Profile of Citizen
+
+      security:
+        - bearerAuth: []
+
+      responses:
+        "200":
+          description: Shows Personal profile
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PersonalProfileResponse"
+
+  /consumer/profile/update:
+    patch:
+      tags:
+        - Profile
+      summary: Update a consumer by cofferid
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/profile"
+      responses:
+        "200":
+          description: Product updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UpdateResponse"
+
+  /consumer/profile/{verify_type}:
+    patch:
+      tags:
+        - Profile
+      summary: verify details
+      parameters:
+        - in: path
+          name: verify_type
+          required: true
+          schema:
+            type: string
+            enum:
+              - email
+              - mobile
+
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+                  example: e7a361c8c98d6637
+
+      responses:
+        "200":
+          description: Verifies Email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VerifyResponse"
+
+  /consumer/forgot/{verify_type}:
+    patch:
+      tags:
+        - Forgot Password
+      summary: verify details
+      parameters:
+        - in: path
+          name: verify_type
+          required: true
+          schema:
+            type: string
+            enum:
+              - email
+              - mobile
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: johndoe@example.com
+                mobile:
+                  type: string
+                  example: 1234567890
+
+      responses:
+        "200":
+          description: token sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordResponse"
+
+  /consumer/forgot/{verify_type}/token/{token_type}:
+    patch:
+      tags:
+        - Forgot Password
+      summary: verify otp and password change
+      parameters:
+        - in: path
+          name: verify_type
+          required: true
+          schema:
+            type: string
+            enum:
+              - email
+              - mobile
+
+        - in: path
+          name: token_type
+          required: true
+          schema:
+            type: string
+            enum:
+              - resend
+              - verify
+
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ResetPasswordRequest"
+
+      responses:
+        "200":
+          description: Verifies Email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResetPasswordSuccessResponse"
+
+  /consumer/reminders/add:
+    post:
+      tags:
+        - reminder
+      summary: Add a new reminder
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Don't forget to buy milk!
+                target:
+                  type: string
+                  example: 2024-06-19T15:30:00Z
+      responses:
+        201:
+          description: Reminder created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Reminder"
+
+  /consumer/reminders:
+    get:
+      tags:
+        - reminder
+      summary: Get all reminders
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: A list of reminders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: string
+                      example: 60f1a4f8b8d1a0001d71b1e2
+                    message:
+                      type: string
+                      example: Don't forget to buy milk!
+                    target:
+                      type: string
+                      example: 2024-06-19T15:30:00Z
+
+  /consumer/reminders/{remid}/delete:
+    delete:
+      tags:
+        - reminder
+      summary: Delete a reminder
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: remid
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+      responses:
+        200:
+          description: Reminder deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReminderResponse"
+        404:
+          description: Reminder not found
+        500:
+          description: Internal server error
+
+  /document/personal/{cat}:
+    get:
+      tags:
+        - Personal Document
+      summary: get personal docs based on citizenship
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/citzdocs"
+
+  /document/personal/tagged/{cat}/{tag}:
+    get:
+      tags:
+        - Personal Document
+      summary: get personal docs based on citizenship and tag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - Personal
+              - Legal
+              - Finance
+              - Others
+              - Health
+              - LegalFinance
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/citzdocs"
+
+  /document/personal/counts/{cat}:
+    get:
+      tags:
+        - Personal Document
+      summary: get personal docs based on citizenship and tag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/tags"
+
+  /document/personal/{cat}/add:
+    post:
+      tags:
+        - Personal Document
+      summary: add personal doc
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/pdocaddRequest"
+
+      responses:
+        200:
+          description: uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pdocaddResponse"
+
+  /document/personal/{cat}/{id}/update:
+    patch:
+      tags:
+        - Personal Document
+      summary: update personal doc
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/pdocupdateRequest"
+
+      responses:
+        200:
+          description: updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/pdocupdateResponse"
+
+  /document/personal/{cat}/{id}/download:
+    get:
+      tags:
+        - Personal Document
+      summary: download personal doc
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      responses:
+        200:
+          description: downloaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/downloadresponse"
+
+  /document/personal/{cat}/{id}/view:
+    get:
+      tags:
+        - Personal Document
+      summary: view personal doc
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/downloadresponse"
+
+  /document/personal/{cat}/{id}/details:
+    get:
+      tags:
+        - Personal Document
+      summary: details of personal doc
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DetailsResponse"
+
+  /document/personal/{cat}/{id}/delete:
+    delete:
+      tags:
+        - Personal Document
+      summary: delete personal doc
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: cat
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/CitizenCategory"
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      responses:
+        200:
+          description: deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DeleteResponse"
+
+  /consumer/relationships:
+    get:
+      tags:
+        - Relationship
+      summary: get all relationship
+      security:
+        - bearerAuth: []
+
+      responses:
+        200:
+          description: Retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getRelResponse"
+
+  /consumer/relationships/tagcount:
+    get:
+      tags:
+        - Relationship
+      summary: get tag count of relationship
+      security:
+        - bearerAuth: []
+
+      responses:
+        200:
+          description: Retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getRelTagResponse"
+
+  /consumer/relationships/bytag/{tag}:
+    get:
+      tags:
+        - Relationship
+      summary: get relationship by tag
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: tag
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - Personal
+              - Lauditor
+              - ContentCoffer
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getRelResponse"
+
+  /consumer/sprelationship/search/consumer:
+    get:
+      tags:
+        - Relationship
+      summary: get all consumer
+      security:
+        - bearerAuth: []
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getAllConRes"
+
+  /consumer/sprelationship/request/consumer:
+    post:
+      tags:
+        - Relationship
+      summary: relationship request for a consumer
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
                 description:
-                    type: string
-                tags:
-                    type: array
-                    items:
-                        type: string
-                size:
-                    type: integer
-                doctype:
-                    type: string
-                expiringOn:
-                    type: string
-                    format: date
-                contentType:
-                    type: string
-                uploadedOn:
-                    type: string
-                    format: date
-                url:
-                    type: string
-                    format: uri
-                sharedWith:
-                    type: string
+                  type: string
+                  example: Please accept the request
+                consumerId:
+                  type: string
+                  example: 5dc538033320fc78228a4d8c
 
-        DeleteResponse:
-            type: object
-            properties:
-                msg:
-                    type: string
-                    example: Document deleted successfully
+      responses:
+        200:
+          description: request sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/relReq"
 
-        getRelResponse:
-            type: object
-            properties:
-                data:
+  /consumer/sprelationship/{relid}/accept:
+    post:
+      tags:
+        - Relationship
+      summary: relationship request accept by a consumer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: relid
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                response:
+                  type: string
+                  example: accept
+
+      responses:
+        200:
+          description: request sent successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/relAcpRes"
+
+  /consumer/dummyrelation/create:
+    post:
+      tags:
+        - Relationship
+      summary: add dummy relation
+      security:
+        - bearerAuth: []
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/createDummyReq"
+
+      responses:
+        201:
+          description: created successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/createDummyRes"
+
+  /consumer/dummyrelation:
+    get:
+      tags:
+        - Relationship
+      summary: get dummy relation
+      security:
+        - bearerAuth: []
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/getDummyRes"
+
+  /consumer/relationships/{rel_id}/docs/share:
+    post:
+      tags:
+        - Relationship
+      summary: documents share with a consumer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rel_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                add:
+                  type: array
+                  items:
                     type: object
                     properties:
-                        relationships:
-                            type: array
-                            items:
-                                type: object
-                                properties:
-                                    id:
-                                        type: string
-                                        example: 659e0bb422fb910788220377
-                                    isSpecial:
-                                        type: string
-                                        example: true
-                                    canAccept:
-                                        type: string
-                                        example: false
-                                    business_name:
-                                        type: string
-                                        example: Boomibalagan R
-                                    business_category:
-                                        type: string
-                                        example: ""
-                                    products:
-                                        type: string
-                                        example: []
-                                    description:
-                                        type: string
-                                        example: ""
-                                    isaccepted:
-                                        type: string
-                                        example: true
-                                    isarchived:
-                                        type: string
-                                        example: false
-                                    status:
-                                        type: string
-                                        example: "accepted"
-                                    documents:
-                                        type: string
-                                        example: {}
-                                    profile:
-                                        type: string
-                                        example: {}
-                                    biztype:
-                                        type: string
-                                        example: "consumer"
-                                    email:
-                                        type: string
-                                        example: ""
-                                    mobile:
-                                        type: string
-                                        example: ""
-                                    guid:
-                                        type: string
-                                        example: "boomibalagan001gmailcom"
-                                    tags:
-                                        type: string
-                                        example: [Personal]
-                                    profileUrl:
-                                        type: string
-                                        example:
+                      doctype:
+                        type: string
+                        example: personal
+                      docid:
+                        type: string
+                        example: 66975832aeac634f1a8abc83
 
-        getRelTagResponse:
+      responses:
+        200:
+          description: doc shared successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shareRes"
+
+  /consumer/relationships/{rel_id}/docs/shared/byme:
+    get:
+      tags:
+        - Relationship
+      summary: documents share by me with a consumer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rel_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shareByMeRes"
+
+  /consumer/relationships/{rel_id}/docs/shared/withme:
+    get:
+      tags:
+        - Relationship
+      summary: documents share with me by a consumer
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rel_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/shareByMeRes"
+
+  /consumer/relationships/{rel_id}/{docid}/{action}:
+    get:
+      tags:
+        - Relationship
+      summary: documents with action
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: rel_id
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+        - name: docid
+          in: path
+          required: true
+          schema:
+            type: string
+            example: 60f1a4f8b8d1a0001d71b1e2
+
+        - name: action
+          in: path
+          required: true
+          schema:
+            type: string
+            enum:
+              - view
+              - download
+
+      responses:
+        200:
+          description: retrived successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/downloadresponse"
+
+components:
+  schemas:
+    login:
+      type: object
+      properties:
+        action:
+          type: string
+          description: Type of action
+          example: "login"
+        logintype:
+          type: string
+          description: Type of login
+          example: "email"
+        email:
+          type: string
+          format: email
+          description: User's email address
+          example: "boomibalagan001@gmail.com"
+        password:
+          type: string
+          format: password
+          description: User's password
+          example: "#Boomi1234"
+
+    LoginResponse:
+      type: object
+      properties:
+        error:
+          type: boolean
+          description: Indicates whether an error occurred
+        message:
+          type: string
+          description: Message indicating the result of the login attempt
+        token:
+          type: string
+          description: JWT Token
+        data:
+          type: object
+          properties:
+            coffer_id:
+              type: string
+              description: Coffer ID of the user
+            custom_uid:
+              type: string
+              description: Custom user ID
+            first_name:
+              type: string
+              description: User's first name
+            last_name:
+              type: string
+              description: User's last name
+            email_verified:
+              type: boolean
+              description: Indicates if the user's email is verified
+            mobile_verified:
+              type: boolean
+              description: Indicates if the user's mobile number is verified
+            lastlogin:
+              type: string
+              format: date-time
+              description: Timestamp of the user's last login
+            email:
+              type: string
+              format: email
+              description: User's email address
+            mobile:
+              type: string
+              description: User's mobile number
+            pk:
+              type: string
+              description: Primary key of the user
+    profile:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+        middle_name:
+          type: string
+          example: fricks
+        last_name:
+          type: string
+          example: Doe
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        mobile:
+          type: string
+          example: 1234567890
+        old_password:
+          type: string
+          format: password
+          example: password123
+        new_password:
+          type: string
+          format: password
+          example: password123
+        confirm_password:
+          type: string
+          format: password
+          example: password123
+
+    register:
+      type: object
+      properties:
+        first_name:
+          type: string
+          example: John
+        last_name:
+          type: string
+          example: Doe
+        country:
+          type: string
+          example: USA
+        email:
+          type: string
+          format: email
+          example: johndoe@example.com
+        mobile:
+          type: string
+          example: 1234567890
+        password:
+          type: string
+          format: password
+          example: password123
+        confirm_password:
+          type: string
+          format: password
+          example: password123
+      required:
+        - first_name
+        - last_name
+        - country
+        - password
+        - confirm_password
+
+    verify:
+      type: object
+      properties:
+        email:
+          type: string
+          example: abc@gmail.com
+        mobile:
+          type: string
+          example: 1234567890
+        token:
+          type: string
+          example: e7a361c8c98d6637
+
+    VerifyResponse:
+      type: object
+      properties:
+        msg1:
+          type: string
+          example: Email verification successful.
+        msg:
+          type: string
+          example: mobile verification successful.
+
+    PersonalProfileResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            first_name:
+              type: string
+              example: Vengadesh
+            last_name:
+              type: string
+              example: R
+            middle_name:
+              type: string
+              example: Waran
+            dob:
+              type: string
+              example: 19-01-1977
+            email:
+              type: string
+              example: abc@gmail.com
+            mobile:
+              type: string
+              example: 1664633453
+            citizen:
+              type: array
+              items:
+                type: object
+                properties:
+                  country:
+                    type: string
+                    example: India
+                  affiliation_type:
+                    type: string
+                    example: citz
+                  mobile_phone:
+                    type: string
+                    example:
+                  home_address:
+                    type: string
+                    example: Thanjavur
+                  alt_phone:
+                    type: string
+                    example:
+                  index:
+                    type: string
+                    example: citizen_primary
+                  work_phone:
+                    type: string
+                    example:
+                  work_address:
+                    type: string
+                    example: Karanataka,Bangalore
+
+    ResetPasswordResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: A token to reset your password is sent to your mobile. It is valid for 5 mins
+        coffer_id:
+          type: string
+          example: 939d55f9ef8908ba
+
+    ResetPasswordRequest:
+      type: object
+      properties:
+        coffer_id:
+          type: string
+          example: 939d55f9ef8908ba
+        otp:
+          type: string
+          example: 773922
+        password:
+          type: string
+          example: 000000
+        confirm_password:
+          type: string
+          example: 000000
+      required:
+        - coffer_id
+        - otp
+        - password
+        - confirm_password
+
+    ResetPasswordSuccessResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Password reset successful. Please login to access your Coffer.
+
+    UpdateResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: profile details updated successfully
+
+    RegisterResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: consumer creted successfully
+
+    Reminder:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: reminder created successfully
+
+    ReminderResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: reminder deleted successfully
+
+    citzdocs:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
             type: object
             properties:
-                counts:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            tagName:
-                                type: string
-                                example: ContentCoffer
-                            count:
-                                type: number
-                                example: 1
+              category:
+                type: string
+                example: citizen_primary
+              name:
+                type: string
+                example: dhinesh
+              description:
+                type: string
+                example: finance docs
+              expiration_date:
+                type: string
+                example: Jun 29, 2022
+              filename:
+                type: string
+                example: image1.jpg
+              filesize:
+                type: string
+                example: 22491
+              content_type:
+                type: string
+                example: image/png
+              created:
+                type: string
+                example: Jun 17, 2022
+              tags:
+                type: array
+                items:
+                  type: string
+                  example: Finance
+              subtags:
+                type: array
+                items:
+                  type: string
+                  example: ""
+              id:
+                type: string
+                example: 62ac30eb863ef503b8b0f17e
+              country:
+                type: string
+                example: India
+              url:
+                type: string
 
-        createDummyReq:
+    tags:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
             type: object
             properties:
-                firm_name:
-                    type: string
-                    example: bharthi associates
+              tagName:
+                type: string
+                example: Finance
+              count:
+                type: number
+                example: 1
 
-                firm_address:
-                    type: string
-                    example: ABC street, kumbakonam
+    pdocaddResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Document uploaded successfully
 
-                account_id:
+    pdocaddRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the uploading file
+        description:
+          type: string
+          description: Description of the file
+        expiration_date:
+          type: string
+          example: 30-07-2024
+        file:
+          type: string
+          format: binary
+          description: The file to upload
+        tags:
+          type: string
+          example: [\"Identity\", \"Personal\", \"Legal\", \"Finance\", \"Health\"]
+          description: Array of strings
+
+      required:
+        - name
+        - description
+        - file
+        - tags
+
+    pdocupdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          description: Name of the uploading file
+        description:
+          type: string
+          description: Description of the file
+        expiration_date:
+          type: string
+          example: 30-07-2024
+        tags:
+          type: array
+          items:
+            type: string
+          description: Array of strings
+
+    pdocupdateResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Document updated successfully
+
+    CitizenCategory:
+      type: string
+      enum:
+        - citizen_primary
+        - citizen_secondary
+        - citizen_third
+        - citizen_fourth
+
+    downloadresponse:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+
+    DetailsResponse:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+        tags:
+          type: array
+          items:
+            type: string
+        size:
+          type: integer
+        doctype:
+          type: string
+        expiringOn:
+          type: string
+          format: date
+        contentType:
+          type: string
+        uploadedOn:
+          type: string
+          format: date
+        url:
+          type: string
+          format: uri
+        sharedWith:
+          type: string
+
+    DeleteResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Document deleted successfully
+
+    getRelResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            relationships:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
                     type: string
                     example: 659e0bb422fb910788220377
-
-                biz_identification_no:
+                  isSpecial:
                     type: string
-                    example: 0000
-
-                others:
+                    example: true
+                  canAccept:
                     type: string
-                    example: nothing
-
-        createDummyRes:
-            type: object
-            properties:
-                msg:
+                    example: false
+                  business_name:
                     type: string
-                    example: Relationship added successfully
-
-        getDummyRes:
-            type: object
-            properties:
-                relationships:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            id:
-                                type: string
-                                example: 6695fc8c22fb9154859e146c
-                            created:
-                                type: object
-                                example: null
-                            firm_name:
-                                type: string
-                                example: bharthi associates
-                            firm_address:
-                                type: string
-                                example: kamatchi josiyar street, kumbakonam
-                            account_id:
-                                type: string
-                                example: 659e0bb422fb910788220377
-                            biz_identification_no:
-                                type: string
-                                example: 0000
-                            others:
-                                type: string
-                                example: nothing
-
-        getAllConRes:
-            type: object
-            properties:
-                consumers:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            firstName:
-                                type: string
-                                example: dhinesh
-                            lastName:
-                                type: string
-                                example: S
-                            email:
-                                type: string
-                                example: dhinesh@gmail.com
-                            id:
-                                type: string
-                                example: 5c06896b2023f43db6f885ed
-
-        relReq:
-            type: object
-            properties:
-                msg:
+                    example: Boomibalagan R
+                  business_category:
                     type: string
-                    example: Request sent successfully.
-
-        relAcpRes:
-            type: object
-            properties:
-                msg:
+                    example: ""
+                  products:
                     type: string
-                    example: Relationship status modified successfully.
-
-        shareRes:
-            type: object
-            properties:
-                msg:
+                    example: []
+                  description:
                     type: string
-                    example: Documents shared with consumer.
+                    example: ""
+                  isaccepted:
+                    type: string
+                    example: true
+                  isarchived:
+                    type: string
+                    example: false
+                  status:
+                    type: string
+                    example: "accepted"
+                  documents:
+                    type: string
+                    example: {}
+                  profile:
+                    type: string
+                    example: {}
+                  biztype:
+                    type: string
+                    example: "consumer"
+                  email:
+                    type: string
+                    example: ""
+                  mobile:
+                    type: string
+                    example: ""
+                  guid:
+                    type: string
+                    example: "boomibalagan001gmailcom"
+                  tags:
+                    type: string
+                    example: [Personal]
+                  profileUrl:
+                    type: string
+                    example:
 
-        shareByMeRes:
+    getRelTagResponse:
+      type: object
+      properties:
+        counts:
+          type: array
+          items:
             type: object
             properties:
-                data:
-                    type: array
-                    items:
-                        type: object
-                        properties:
-                            docname:
-                                type: string
-                                example: pancard
-                            description:
-                                type: string
-                                example: ABCDE1234R
-                            docid:
-                                type: string
-                                example: 668281c4aeac634f1a8abb33
-                            doctype:
-                                type: string
-                                example: identity
-                            country_affiliation:
-                                type: string
-                                example: citizen_primary
-                            url:
-                                type: string
-                                example: url
-                            content_type:
-                                type: string
-                                example: image/png
+              tagName:
+                type: string
+                example: ContentCoffer
+              count:
+                type: number
+                example: 1
 
-    securitySchemes:
-        bearerAuth: # arbitrary name for the security scheme
-            type: http
-            scheme: bearer
-            bearerFormat: JWT
+    createDummyReq:
+      type: object
+      properties:
+        firm_name:
+          type: string
+          example: bharthi associates
+
+        firm_address:
+          type: string
+          example: ABC street, kumbakonam
+
+        account_id:
+          type: string
+          example: 659e0bb422fb910788220377
+
+        biz_identification_no:
+          type: string
+          example: 0000
+
+        others:
+          type: string
+          example: nothing
+
+    createDummyRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Relationship added successfully
+
+    getDummyRes:
+      type: object
+      properties:
+        relationships:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+                example: 6695fc8c22fb9154859e146c
+              created:
+                type: object
+                example: null
+              firm_name:
+                type: string
+                example: bharthi associates
+              firm_address:
+                type: string
+                example: kamatchi josiyar street, kumbakonam
+              account_id:
+                type: string
+                example: 659e0bb422fb910788220377
+              biz_identification_no:
+                type: string
+                example: 0000
+              others:
+                type: string
+                example: nothing
+
+    getAllConRes:
+      type: object
+      properties:
+        consumers:
+          type: array
+          items:
+            type: object
+            properties:
+              firstName:
+                type: string
+                example: dhinesh
+              lastName:
+                type: string
+                example: S
+              email:
+                type: string
+                example: dhinesh@gmail.com
+              id:
+                type: string
+                example: 5c06896b2023f43db6f885ed
+
+    relReq:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Request sent successfully.
+
+    relAcpRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Relationship status modified successfully.
+
+    shareRes:
+      type: object
+      properties:
+        msg:
+          type: string
+          example: Documents shared with consumer.
+
+    shareByMeRes:
+      type: object
+      properties:
+        data:
+          type: array
+          items:
+            type: object
+            properties:
+              docname:
+                type: string
+                example: pancard
+              description:
+                type: string
+                example: ABCDE1234R
+              docid:
+                type: string
+                example: 668281c4aeac634f1a8abb33
+              doctype:
+                type: string
+                example: identity
+              country_affiliation:
+                type: string
+                example: citizen_primary
+              url:
+                type: string
+                example: url
+              content_type:
+                type: string
+                example: image/png
+
+  securitySchemes:
+    bearerAuth: # arbitrary name for the security scheme
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
