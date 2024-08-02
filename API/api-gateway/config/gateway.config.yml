@@ -7,10 +7,10 @@ http:
 apiEndpoints:
   consumer:
     host: *
-    paths: /api/v1/consumers/*
+    paths: /api/v1/consumer/*
   document:
     host: *
-    paths: /api/v1/documents/*
+    paths: /api/v1/document/*
 
 serviceEndpoints:
   consumerService:
@@ -35,16 +35,14 @@ pipelines:
           action:
             origin: *
             methods: GET, POST, PUT, DELETE
-      - log:
-          action:
-            message: successfully authenticated
+
       - proxy:
           action:
             serviceEndpoint: consumerService
             changeOrigin: true
       - log:
           action:
-            message: consumer request proxy to consumer service 
+            message: consumer service 
 
   documentPipeline:
     apiEndpoints:
@@ -60,4 +58,4 @@ pipelines:
             changeOrigin: true
       - log:
           action:
-            message: document request proxy to document service 
+            message: document service 
