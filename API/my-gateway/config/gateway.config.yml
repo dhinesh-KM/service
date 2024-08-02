@@ -49,14 +49,9 @@ pipelines:
             # Uncomment `key-auth:` when instructed to in the Getting Started guide.
             # - key-auth:
             - cors:
-                  - action:
-                        origin: "*"
-                        methods:
-                            - GET
-                            - POST
-                            - PUT
-                            - PATCH
-                            - DELETE
+                  action:
+                      origin: "*"
+                      methods: "GET, POST, PUT, DELETE"
             - log:
                   - action:
                         message: "consumer received"
@@ -74,14 +69,8 @@ pipelines:
             # - key-auth:
             - cors:
                   action:
-                      origin:
-                          - "*"
-                      methods:
-                          - GET
-                          - POST
-                          - PUT
-                          - PATCH
-                          - DELETE
+                      origin: "*"
+                      methods: "GET, POST, PUT, DELETE"
             - log:
                   - action:
                         message: "document received"
